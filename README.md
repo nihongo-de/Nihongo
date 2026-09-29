@@ -2,7 +2,7 @@
 
 Eine kleine, kostenlose Lernhilfe für Japanisch – auf Deutsch, ohne Werbung, ohne Anmeldung.
 
-**➜ [dominiquemartin94.github.io/Nihongo](https://dominiquemartin94.github.io/Nihongo/)**
+**➜ [nihongo-de.github.io](https://nihongo-de.github.io/)**
 
 ## Inhalte
 
@@ -29,7 +29,7 @@ Voraussetzung: Node.js 22
 
 ```bash
 npm install
-npm run dev       # Entwicklungsserver: http://localhost:5173/Nihongo/
+npm run dev       # Entwicklungsserver: http://localhost:5173/
 npm run build     # Produktions-Build nach docs/.vitepress/dist
 npm run preview   # Build lokal testen (inkl. Service Worker/Offline)
 ```
@@ -60,7 +60,7 @@ Jeder Push auf `main` baut die Seite per GitHub Actions ([.github/workflows/depl
 
 Einmalig in den Repository-Einstellungen: **Settings → Pages → Source: GitHub Actions**.
 
-Der Basis-Pfad `/Nihongo/` ist in [docs/.vitepress/config.mts](docs/.vitepress/config.mts) festgelegt und muss angepasst werden, falls das Repository umbenannt wird.
+Der Basis-Pfad wird im Workflow automatisch von GitHub Pages übernommen (`/` für das Repository `nihongo-de.github.io`).
 
 ## Technik
 

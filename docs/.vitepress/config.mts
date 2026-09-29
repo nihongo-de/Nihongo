@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitepress'
 import { withPwa } from '@vite-pwa/vitepress'
 
-// GitHub Pages project URL: https://dominiquemartin94.github.io/Nihongo/
-const base = '/Nihongo/'
+// Set by the deploy workflow from GitHub Pages ("/" for nihongo-de.github.io, "/<repo>/" otherwise)
+const base = process.env.BASE_PATH || '/'
 
 export default withPwa(defineConfig({
   base,
