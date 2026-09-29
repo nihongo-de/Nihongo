@@ -1,0 +1,332 @@
+/* Farbwelt: Shu-iro (朱色) + Ai-iro (藍色) */
+:root {
+  --nh-shu: #c8372d;
+  --nh-ai: #34489a;
+
+  --vp-c-brand-1: #c8372d;
+  --vp-c-brand-2: #d64b41;
+  --vp-c-brand-3: #e0655c;
+  --vp-c-brand-soft: rgba(200, 55, 45, 0.12);
+
+  --vp-font-family-base: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Noto Sans JP',
+    'Hiragino Sans', 'Yu Gothic', Meiryo, sans-serif;
+
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, var(--nh-shu) 20%, var(--nh-ai));
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #e2493e 50%, #4a5fc1 50%);
+  --vp-home-hero-image-filter: blur(56px);
+
+  --nh-radius: 14px;
+  --nh-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  --nh-shu: #ff7468;
+  --nh-ai: #8fa2ff;
+
+  --vp-c-brand-1: #ff7468;
+  --vp-c-brand-2: #f45b4f;
+  --vp-c-brand-3: #d64b41;
+  --vp-c-brand-soft: rgba(255, 116, 104, 0.16);
+
+  --nh-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 640px) {
+  :root { --vp-home-hero-image-filter: blur(64px); }
+}
+
+/* Japanischer Text */
+:lang(ja),
+[lang='ja'] {
+  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', Meiryo, sans-serif;
+}
+
+.vp-doc ruby rt {
+  font-size: 0.55em;
+  color: var(--vp-c-text-2);
+  font-weight: 400;
+}
+
+/* Tabellen: dezent statt Excel-Gitter */
+.vp-doc table {
+  display: table;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: var(--nh-radius);
+  overflow: hidden;
+}
+
+.vp-doc tr { border: none; }
+.vp-doc tr:nth-child(2n) { background: transparent; }
+.vp-doc tbody tr:hover { background: var(--vp-c-bg-soft); }
+
+.vp-doc th,
+.vp-doc td {
+  border: none;
+  border-bottom: 1px solid var(--vp-c-divider);
+  padding: 10px 16px;
+}
+
+.vp-doc tbody tr:last-child td { border-bottom: none; }
+
+.vp-doc th {
+  background: var(--vp-c-bg-soft);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--vp-c-text-2);
+}
+
+/* Karten-Raster */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.info-grid.wide { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+.kanji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: var(--nh-radius);
+  background: var(--vp-c-bg-soft);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--nh-shadow);
+  border-color: var(--vp-c-brand-soft);
+}
+
+a.info-card { color: inherit; text-decoration: none; }
+a.info-card:hover { color: inherit; }
+
+.info-card__big {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 30px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--vp-c-brand-1);
+}
+
+.info-card__label {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--vp-c-text-1);
+}
+
+.info-card__text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
+.info-card__text [lang='ja'] { color: var(--vp-c-text-1); }
+
+/* Zeile für PitchAccent- und MoraSplit-Karten */
+.demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.demo-row > * { margin: 0 !important; }
+
+/* Gegenüberstellungen */
+.compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.compare__col {
+  padding: 20px;
+  border-radius: var(--nh-radius);
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  border-top: 4px solid var(--nh-shu);
+}
+
+.compare__col:nth-child(2) { border-top-color: var(--nh-ai); }
+
+.compare__head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.compare__kana {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--nh-shu);
+}
+
+.compare__col:nth-child(2) .compare__kana { color: var(--nh-ai); }
+
+.compare__title { font-weight: 600; }
+
+.compare__col p { margin: 6px 0; font-size: 14px; color: var(--vp-c-text-2); }
+
+.vp-doc .compare__col .ex { background: var(--vp-c-bg); }
+
+/* Satzschablone */
+.sentence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.sentence__part {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  min-width: 90px;
+}
+
+.sentence__part b {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 18px;
+}
+
+.sentence__part small { color: var(--vp-c-text-2); font-size: 12px; }
+.sentence__part.is-topic { border-color: var(--nh-ai); }
+.sentence__part.is-verb { border-color: var(--nh-shu); background: var(--vp-c-brand-soft); }
+
+/* Lernpfad auf der Startseite */
+.roadmap {
+  counter-reset: step;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.roadmap__step {
+  position: relative;
+  padding: 22px 20px 18px;
+  border-radius: var(--nh-radius);
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  color: inherit !important;
+  text-decoration: none !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.roadmap__step:hover { transform: translateY(-2px); box-shadow: var(--nh-shadow); }
+
+.roadmap__step::before {
+  counter-increment: step;
+  content: counter(step, cjk-ideographic);
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--vp-c-brand-soft);
+}
+
+.roadmap__step strong { display: block; margin-bottom: 4px; color: var(--vp-c-text-1); }
+.roadmap__step span { font-size: 14px; color: var(--vp-c-text-2); line-height: 1.6; }
+
+/* Nummerierte Tipps */
+.vp-doc h2 .tip-no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-right: 10px;
+  border-radius: 10px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+/* Startseiten-Features: Kana als Icon */
+.VPFeature .icon {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft) !important;
+}
+
+/* Druck */
+.print-all-pages { display: none; }
+
+@media print {
+  .print-dialog { display: none !important; }
+
+  html.print-all .Layout { display: block; min-height: 0; }
+  html.print-all .Layout > :not(.print-all-pages) { display: none !important; }
+  html.print-all .print-all-pages { display: block; }
+  .print-all-pages [data-print-skip] { display: none !important; }
+  .print-all-page:not([data-print-skip]) ~ .print-all-page { break-before: page; }
+
+  /* Firefox unterstützt weder widows/orphans noch break-after: avoid */
+  .vp-doc p,
+  .vp-doc li,
+  .vp-doc table,
+  .vp-doc tr,
+  .vp-doc blockquote,
+  .vp-doc .custom-block,
+  .vp-doc div[class*='language-'],
+  .kana-chart,
+  .ex,
+  .mora,
+  .pitch,
+  .kanji,
+  .info-card,
+  .compare__col,
+  .sentence,
+  .roadmap__step,
+  .print-keep {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .vp-doc thead { display: table-header-group; }
+
+  .vp-doc h1,
+  .vp-doc h2,
+  .vp-doc h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .kana-chart__toggle,
+  .kana-chart__hint { display: none !important; }
+
+  .vp-doc .kana-chart { padding: 12px; }
+  .vp-doc .kana-chart .kana-chart__grid { gap: 4px; max-width: calc(var(--cols) * 52px); }
+  .vp-doc .kana-chart .kana-cell { border-radius: 6px; }
+  .vp-doc .kana-chart .kana-cell__kana { font-size: 20px; }
+  .vp-doc .kana-chart .kana-cell__romaji { margin-top: 0; font-size: 9px; }
+}
