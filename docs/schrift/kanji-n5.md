@@ -22,40 +22,43 @@ die hier gezeigte deckt sich mit den gängigen Lernlisten. Jede Karte zeigt die 
 ::: tip So liest du die Karten
 <span lang="ja">音</span> = **On-Lesung** (Katakana), <span lang="ja">訓</span> = **Kun-Lesung** (Hiragana, Endungen in Klammern).
 Ein „–“ heißt: Diese Lesung ist für Anfänger nicht relevant. Mehr dazu unter [On- und Kun-Lesung](./kanji#on-und-kun-lesung).
+
+Tippe auf ein Kanji, um die **Strichfolge** als Animation zu sehen und das Zeichen per Finger, Stift oder Maus selbst nachzuzeichnen.
 :::
 
 ## Zahlen & Geld {#zahlen}
 
-<N5KanjiGrid group="zahlen" />
+<KanjiGrid group="zahlen" />
 
 ## Zeit & Wochentage {#zeit}
 
-<N5KanjiGrid group="zeit" />
+<KanjiGrid group="zeit" />
 
 ## Menschen & Familie {#menschen}
 
-<N5KanjiGrid group="menschen" />
+<KanjiGrid group="menschen" />
 
 ## Richtung & Ort {#richtung}
 
-<N5KanjiGrid group="richtung" />
+<KanjiGrid group="richtung" />
 
 ## Natur, Wetter & Verkehr {#natur}
 
-<N5KanjiGrid group="natur" />
+<KanjiGrid group="natur" />
 
 ## Lernen & Sprache {#lernen}
 
-<N5KanjiGrid group="lernen" />
+<KanjiGrid group="lernen" />
 
 ## Bewegen & Handeln {#handeln}
 
-<N5KanjiGrid group="handeln" />
+<KanjiGrid group="handeln" />
 
 ## Eigenschaften & Fragen {#eigenschaften}
 
-<N5KanjiGrid group="eigenschaften" />
+<KanjiGrid group="eigenschaften" />
 
 ::: info Weiter üben
 Zu jeder Gruppe gibt es [Lesesätze mit Furigana](../uebungen/kanji-n5) – dort kannst du die Lesehilfe ausblenden und dich selbst testen.
+Im [Kanji-Quiz](../uebungen/kanji-quiz) fragst du die Kanji per Multiple Choice, Schreibübung oder Flashcards ab. Weiter geht es mit den [N4-Kanji](./kanji-n4).
 :::

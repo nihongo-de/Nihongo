@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
 import RubyText from './RubyText.vue'
+import StrokeDialog from './StrokeDialog.vue'
+import { loadRatings, ratingLabels, ratings } from '../utils/strokes'
 
-defineProps<{
+const props = defineProps<{
   k: string
   de: string
   on?: string
@@ -10,11 +13,25 @@ defineProps<{
   ex?: string
   exDe?: string
 }>()
+
+const open = ref(false)
+const rating = computed(() => ratings.value[props.k])
+onMounted(loadRatings)
 </script>
 
 <template>
   <div class="kanji">
-    <span class="kanji__char" lang="ja">{{ k }}</span>
+    <span v-if="rating" :class="`kanji__rating is-${rating}`" :title="`Selbstbewertung: ${ratingLabels[rating]}`" />
+    <button
+      type="button"
+      class="kanji__char"
+      lang="ja"
+      title="Strichfolge ansehen und schreiben üben"
+      :aria-label="`${k}: Strichfolge und Schreibübung`"
+      @click="open = true"
+    >
+      {{ k }}
+    </button>
     <span class="kanji__de">{{ de }}</span>
     <dl class="kanji__readings" lang="ja">
       <template v-if="on"><dt>音</dt><dd>{{ on }}</dd></template>
@@ -24,11 +41,13 @@ defineProps<{
       <span lang="ja"><RubyText :text="ex" /></span>
       <small v-if="exDe">{{ exDe }}</small>
     </p>
+    <StrokeDialog v-if="open" :text="k" :label="de" @close="open = false" />
   </div>
 </template>
 
 <style scoped>
 .kanji {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -44,10 +63,17 @@ defineProps<{
 .kanji:hover { transform: translateY(-2px); border-color: var(--vp-c-brand-1); }
 
 .kanji__char {
+  padding: 0 10px;
+  border-radius: 10px;
   font-size: 44px;
   line-height: 1.15;
   font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
+
+.kanji__char:hover,
+.kanji__char:focus-visible { color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
 
 .kanji__de { font-weight: 600; font-size: 14px; }
 
@@ -83,4 +109,21 @@ defineProps<{
 
 .kanji__ex [lang='ja'] { font-size: 16px; }
 .kanji__ex small { font-size: 12px; line-height: 1.4; color: var(--vp-c-text-2); }
+
+.kanji__rating {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.kanji__rating.is-again { background: var(--vp-c-danger-1); }
+.kanji__rating.is-almost { background: var(--vp-c-warning-1); }
+.kanji__rating.is-good { background: var(--vp-c-success-1); }
+
+@media print {
+  .kanji__rating { display: none; }
+}
 </style>

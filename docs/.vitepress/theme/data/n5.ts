@@ -23,7 +23,7 @@ export interface N5Group {
 }
 
 // Zeilenformat: Kanji | On | Kun | Bedeutung | Beispielwort | Übersetzung
-const k = (lines: string): N5Kanji[] =>
+export const parseKanji = (lines: string): N5Kanji[] =>
   lines
     .trim()
     .split('\n')
@@ -31,6 +31,8 @@ const k = (lines: string): N5Kanji[] =>
       const [char, on, kun, de, ex, exDe] = line.split('|').map((s) => s.trim())
       return { k: char, on, kun, de, ex, exDe }
     })
+
+const k = parseKanji
 
 const s = (jp: string, ro: string, de: string): N5Sentence => ({ jp, ro, de })
 

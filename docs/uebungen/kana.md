@@ -9,6 +9,7 @@ Das Quiz fragt **jedes Kana-Zeichen und jede Kombination** ab – Grundzeichen, 
 Yōon wie <span lang="ja">きゃ</span>, die erweiterten Katakana wie <span lang="ja">ファ</span> sowie Wörter mit kleinem <span lang="ja">っ</span>, Langvokalen und <span lang="ja">ん</span>.
 Die Reihenfolge ist zufällig; falsche Antworten kommen am Ende noch einmal dran.
 Im **Flashcard-Modus** tippst du nichts: Du liest die Karte in der eingestellten Zeit, dann wird die Lösung aufgedeckt.
+Im **Schreibmodus** siehst du die Rōmaji und zeichnest das Kana selbst – danach vergleichst du mit der Vorlage samt Strichfolge und bewertest dich selbst.
 
 <KanaQuiz />
 

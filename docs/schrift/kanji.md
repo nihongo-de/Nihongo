@@ -130,6 +130,10 @@ Die richtige Reihenfolge der Striche ist kein Selbstzweck: Kanji werden dadurch 
   <div class="info-card"><span class="info-card__big" lang="ja">中</span><span class="info-card__label">Durchgehender Strich zuletzt</span></div>
 </div>
 
+::: tip Selbst ausprobieren
+Tippe auf einer Kanji-Karte auf das Zeichen: Dort läuft die Reihenfolge als Animation ab, und im Schreibfeld zeichnest du das Zeichen mit Finger, Stift oder Maus nach, vergleichst es mit der Vorlage und bewertest dich selbst. Das funktioniert genauso in den Kana-Tabellen.
+:::
+
 ## Die ersten Kanji
 
 Zahlen, Wochentage und ein paar Grundwörter – damit kannst du sofort loslegen.
@@ -174,4 +178,4 @@ Die Kanji <span lang="ja">日 月 火 水 木 金 土</span> ergeben mit <span l
 - **Geschichten erfinden** wie bei <span lang="ja">休</span> – je absurder, desto besser merkst du sie dir.
 - **Lesen vor Schreiben**: Erkennen ist im Alltag wichtiger als perfekt schreiben können.
 
-Weiter geht es mit der [Übersicht aller 80 N5-Kanji](./kanji-n5) und den passenden [Leseübungen](../uebungen/kanji-n5).
+Weiter geht es mit der [Übersicht aller 80 N5-Kanji](./kanji-n5), den [N4-Kanji](./kanji-n4), den passenden [Leseübungen](../uebungen/kanji-n5) und dem [Kanji-Quiz](../uebungen/kanji-quiz).

@@ -79,7 +79,8 @@ export default withPwa(defineConfig({
           { text: 'Katakana カタカナ', link: '/schrift/katakana' },
           { text: 'Kana-Kombinationen', link: '/schrift/kombinationen' },
           { text: 'Kanji 漢字', link: '/schrift/kanji' },
-          { text: 'Die 80 N5-Kanji', link: '/schrift/kanji-n5' }
+          { text: 'Die 80 N5-Kanji', link: '/schrift/kanji-n5' },
+          { text: 'Die N4-Kanji', link: '/schrift/kanji-n4' }
         ]
       },
       {
@@ -112,6 +113,7 @@ export default withPwa(defineConfig({
         items: [
           { text: 'Kana-Quiz', link: '/uebungen/kana' },
           { text: 'N5-Kanji lesen', link: '/uebungen/kanji-n5' },
+          { text: 'Kanji-Quiz', link: '/uebungen/kanji-quiz' },
           { text: 'Partikel-Übungen', link: '/uebungen/partikel' }
         ]
       }

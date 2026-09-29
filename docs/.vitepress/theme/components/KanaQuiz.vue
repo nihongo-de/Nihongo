@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { kanaSets, kanaWords, toKatakana, type KanaSet } from '../data/kana'
+import { loadGlyph, rate as saveRating, ratingLabels, strokeCountHint, type Glyph, type Rating } from '../utils/strokes'
+import WritingPad from './WritingPad.vue'
+import StrokeDialog from './StrokeDialog.vue'
 
 type Script = 'hiragana' | 'katakana'
 type SetId = KanaSet | 'words'
@@ -10,6 +13,8 @@ interface Card {
   accept: string[]
   kanji?: string
   de?: string
+  /** Unterscheidet gleich klingende Kana beim Schreiben */
+  hint?: string
 }
 
 const SETS: { id: SetId; label: string; sample: string }[] = [
@@ -29,6 +34,11 @@ const ALT: Record<string, string[]> = {
 }
 const KANA_ALT: Record<string, string[]> = { ぢ: ['di', 'dji'], づ: ['du', 'dzu'], を: ['wo'], ん: ['nn'] }
 const LONG: Record<string, string> = { ā: 'aa', ī: 'ii', ū: 'uu', ē: 'ee', ō: 'oo' }
+const HINT: Record<string, string> = {
+  じ: 'sa-Reihe mit ゛', ず: 'sa-Reihe mit ゛', ぢ: 'ta-Reihe mit ゛', づ: 'ta-Reihe mit ゛',
+  お: 'Vokal', を: 'Partikel wo',
+  じゃ: 'sa-Reihe mit ゛', じゅ: 'sa-Reihe mit ゛', じょ: 'sa-Reihe mit ゛'
+}
 
 const normalize = (s: string) =>
   s
@@ -42,7 +52,7 @@ const normalize = (s: string) =>
 const variants = (r: string) =>
   [r, r.replace(/ō/g, 'ou')].flatMap((v) => [v, v.replace(/ei/g, 'ee')])
 
-function makeCard(kana: string, romaji: string[], key = kana, extra: Pick<Card, 'kanji' | 'de'> = {}): Card {
+function makeCard(kana: string, romaji: string[], key = kana, extra: Pick<Card, 'kanji' | 'de' | 'hint'> = {}): Card {
   const accept = romaji.flatMap((r) => [...variants(r), ...(ALT[r] ?? [])]).concat(KANA_ALT[key] ?? [])
   return { kana, romaji: romaji[0], accept: [...new Set(accept.map(normalize))], ...extra }
 }
@@ -57,10 +67,15 @@ function buildCards(): Card[] {
     for (const id of Object.keys(kanaSets) as KanaSet[]) {
       if (!sets[id] || (id === 'extended' && script === 'hiragana')) continue
       for (const cell of kanaSets[id].rows.flat()) {
-        if (cell) out.push(makeCard(script === 'katakana' ? toKatakana(cell[0]) : cell[0], [cell[1]], cell[0]))
+        if (cell) {
+          const kana = script === 'katakana' ? toKatakana(cell[0]) : cell[0]
+          out.push(makeCard(kana, [cell[1]], cell[0], { hint: HINT[cell[0]] }))
+        }
       }
     }
-    if (sets.words) out.push(...kanaWords[script].map(({ kana, romaji, kanji, de }) => makeCard(kana, romaji, kana, { kanji, de })))
+    if (sets.words && mode.value !== 'write') {
+      out.push(...kanaWords[script].map(({ kana, romaji, kanji, de }) => makeCard(kana, romaji, kana, { kanji, de })))
+    }
   }
   return out
 }
@@ -76,7 +91,7 @@ function shuffle<T>(list: T[]): T[] {
 
 const deckSize = computed(() => buildCards().length)
 
-const mode = ref<'type' | 'flash'>('type')
+const mode = ref<'type' | 'flash' | 'write'>('type')
 const seconds = ref(3)
 const delay = computed(() => Math.max(0.5, Number(seconds.value) || 3))
 const revealed = ref(false)
@@ -114,7 +129,29 @@ function showCard() {
   clearTimeout(timer)
   revealed.value = false
   if (mode.value === 'flash') timer = setTimeout(reveal, delay.value * 1000)
+  else if (mode.value === 'write') prepareWrite(current.value.kana)
   else nextTick(() => inputEl.value?.focus())
+}
+
+/* Schreiben */
+const glyph = ref<Glyph | null>()
+const strokes = ref<[number, number][][]>([])
+const dialog = ref<Card | null>(null)
+const isKatakana = (kana: string) => /[\u30a0-\u30ff]/.test(kana)
+
+async function prepareWrite(kana: string) {
+  glyph.value = undefined
+  strokes.value = []
+  const g = await loadGlyph(kana)
+  if (current.value?.kana === kana) glyph.value = g
+}
+
+function rateWriting(r: Rating) {
+  const card = current.value
+  if (!card) return
+  saveRating(card.kana, r)
+  grade(card, r === 'good', r === 'again')
+  next()
 }
 
 function reveal() {
@@ -130,7 +167,7 @@ function next() {
   else showCard()
 }
 
-function grade(card: Card, ok: boolean) {
+function grade(card: Card, ok: boolean, requeue = !ok) {
   last.value = { card, ok }
   if (ok) {
     if (!missed.value.includes(card)) firstTry.value++
@@ -138,7 +175,7 @@ function grade(card: Card, ok: boolean) {
   }
   if (!missed.value.includes(card)) missed.value.push(card)
   // Falsche Karten kommen am Ende noch einmal
-  queue.value.push(card)
+  if (requeue) queue.value.push(card)
 }
 
 function submit() {
@@ -158,7 +195,7 @@ function rate(ok: boolean) {
 }
 
 function onKey(e: KeyboardEvent) {
-  if (phase.value !== 'run' || mode.value !== 'flash' || e.ctrlKey || e.metaKey || e.altKey) return
+  if (phase.value !== 'run' || mode.value !== 'flash' || dialog.value || e.ctrlKey || e.metaKey || e.altKey) return
   // Buttons lösen Enter/Leertaste selbst aus
   if ((e.target as HTMLElement | null)?.closest?.('input, textarea, select, button')) return
   const key = e.key
@@ -172,6 +209,9 @@ function onKey(e: KeyboardEvent) {
 }
 
 watch(phase, (p) => p !== 'run' && clearTimeout(timer))
+const resultLabel = computed(
+  () => ({ type: 'auf Anhieb richtig', flash: 'auf Anhieb gewusst', write: 'sicher geschrieben' })[mode.value]
+)
 onMounted(() => window.addEventListener('keydown', onKey))
 onBeforeUnmount(() => {
   clearTimeout(timer)
@@ -189,8 +229,8 @@ onBeforeUnmount(() => {
       </fieldset>
       <fieldset class="kquiz__group">
         <legend>Zeichen</legend>
-        <label v-for="s in SETS" :key="s.id">
-          <input v-model="sets[s.id]" type="checkbox" />
+        <label v-for="s in SETS" :key="s.id" :class="{ 'is-off': s.id === 'words' && mode === 'write' }">
+          <input v-model="sets[s.id]" type="checkbox" :disabled="s.id === 'words' && mode === 'write'" />
           {{ s.label }} <span class="kquiz__sample" lang="ja">{{ s.sample }}</span>
         </label>
       </fieldset>
@@ -198,17 +238,22 @@ onBeforeUnmount(() => {
         <legend>Modus</legend>
         <label><input v-model="mode" type="radio" value="type" /> Eintippen</label>
         <label><input v-model="mode" type="radio" value="flash" /> Flashcards (nur lesen)</label>
+        <label><input v-model="mode" type="radio" value="write" /> Schreiben</label>
         <label v-if="mode === 'flash'" class="kquiz__seconds">
           <input v-model.number="seconds" type="number" min="0.5" max="60" step="0.5" /> Sekunden pro Karte
         </label>
       </fieldset>
       <div class="kquiz__actions">
         <button type="button" class="kquiz__btn is-primary" :disabled="!deckSize" @click="start(buildCards())">
-          {{ mode === 'flash' ? 'Flashcards' : 'Quiz' }} starten · {{ deckSize }} Karten
+          {{ { type: 'Quiz', flash: 'Flashcards', write: 'Schreibübung' }[mode] }} starten · {{ deckSize }} Karten
         </button>
       </div>
       <p v-if="mode === 'type'" class="kquiz__note">
         Tippe die Rōmaji ein und bestätige mit Enter. Langvokale gehen als <em>ō</em>, <em>oo</em>, <em>ou</em> oder <em>o-</em>.
+      </p>
+      <p v-else-if="mode === 'write'" class="kquiz__note">
+        Du siehst die Rōmaji und schreibst das Kana mit Finger, Stift oder Maus. Danach vergleichst du mit der Vorlage und bewertest dich selbst.
+        Wörter sind in diesem Modus ausgenommen.
       </p>
       <p v-else class="kquiz__note">
         Lies jede Karte im Kopf. Nach {{ delay }} Sekunden wird die Lösung aufgedeckt, dann sagst du selbst, ob du sie gewusst hast.
@@ -218,9 +263,53 @@ onBeforeUnmount(() => {
     <template v-else-if="phase === 'run' && current">
       <div class="kquiz__progress" :style="{ '--p': `${progress}%` }">
         <span>{{ pos + 1 }} / {{ queue.length }}</span>
-        <span>{{ firstTry }} auf Anhieb {{ mode === 'flash' ? 'gewusst' : 'richtig' }}</span>
+        <span>{{ firstTry }} {{ resultLabel }}</span>
       </div>
-      <div class="kquiz__card" :class="{ 'is-wrong': wrong }">
+      <template v-if="mode === 'write'">
+        <div class="kquiz__card">
+          <p class="kquiz__reveal">{{ current.romaji }}</p>
+          <p class="kquiz__meaning">
+            {{ isKatakana(current.kana) ? 'Katakana' : 'Hiragana' }}<template v-if="current.hint"> · {{ current.hint }}</template>
+          </p>
+          <button
+            v-if="revealed"
+            type="button"
+            class="kquiz__kana is-link"
+            lang="ja"
+            title="Strichfolge ansehen"
+            @click="dialog = current"
+          >
+            {{ current.kana }}
+          </button>
+        </div>
+        <div class="kquiz__write">
+          <p v-if="glyph === undefined" class="kquiz__note">Lade …</p>
+          <WritingPad
+            v-else-if="glyph"
+            v-model="strokes"
+            :glyph="glyph"
+            :revealed="revealed"
+            :label="`Schreibfeld für ${current.romaji}`"
+          />
+          <div v-if="!revealed" class="kquiz__form is-center">
+            <button type="button" class="kquiz__btn" :disabled="!strokes.length" @click="strokes = strokes.slice(0, -1)">↶ Rückgängig</button>
+            <button type="button" class="kquiz__btn" :disabled="!strokes.length" @click="strokes = []">Löschen</button>
+            <button type="button" class="kquiz__btn is-primary" @click="reveal">
+              {{ strokes.length ? 'Vergleichen' : 'Lösung zeigen' }}
+            </button>
+          </div>
+          <template v-else>
+            <p v-if="glyph && strokes.length" class="kquiz__note">{{ strokeCountHint(strokes.length, glyph.strokes.length) }}</p>
+            <p class="kquiz__rate-q">Wie gut hat es geklappt?</p>
+            <div class="kquiz__form is-center">
+              <button v-for="(l, r) in ratingLabels" :key="r" type="button" class="kquiz__btn" :class="`is-${r}`" @click="rateWriting(r)">
+                {{ l }}
+              </button>
+            </div>
+          </template>
+        </div>
+      </template>
+      <div v-else class="kquiz__card" :class="{ 'is-wrong': wrong }">
         <span class="kquiz__kana" lang="ja">{{ current.kana }}</span>
         <p v-if="wrong" class="kquiz__solution">Richtig ist <strong>{{ current.romaji }}</strong> – kommt am Ende nochmal.</p>
         <p v-else-if="revealed" class="kquiz__reveal">{{ current.romaji }}</p>
@@ -239,7 +328,7 @@ onBeforeUnmount(() => {
         </div>
         <p class="kquiz__keys">Tasten: Leertaste aufdecken · Enter / → gewusst · ← / Rücktaste nicht gewusst</p>
       </template>
-      <form v-else class="kquiz__form" @submit.prevent="submit">
+      <form v-else-if="mode === 'type'" class="kquiz__form" @submit.prevent="submit">
         <input
           ref="inputEl"
           v-model="answer"
@@ -269,7 +358,7 @@ onBeforeUnmount(() => {
 
     <template v-else-if="phase === 'done'">
       <p class="kquiz__result">
-        <strong>{{ firstTry }}</strong> von {{ total }} auf Anhieb {{ mode === 'flash' ? 'gewusst' : 'richtig' }}
+        <strong>{{ firstTry }}</strong> von {{ total }} {{ resultLabel }}
         <span>({{ Math.round((firstTry / total) * 100) }} %)</span>
       </p>
       <template v-if="missed.length">
@@ -288,6 +377,8 @@ onBeforeUnmount(() => {
         <button type="button" class="kquiz__btn" @click="phase = 'setup'">Auswahl ändern</button>
       </div>
     </template>
+
+    <StrokeDialog v-if="dialog" :text="dialog.kana" :label="dialog.romaji" @close="dialog = null" />
   </div>
 </template>
 
@@ -456,6 +547,28 @@ onBeforeUnmount(() => {
 .kquiz__missed small { font-size: 12px; color: var(--vp-c-brand-1); font-weight: 600; }
 .kquiz__missed .kquiz__de { color: var(--vp-c-text-2); font-weight: 400; }
 .kquiz__missed .kquiz__de [lang='ja'] { font-size: 12px; }
+
+.kquiz__write {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.kquiz__form.is-center { justify-content: center; }
+.kquiz__group label.is-off { opacity: 0.45; cursor: default; }
+.kquiz__rate-q { font-weight: 600; }
+.kquiz__btn.is-again { border-color: var(--vp-c-danger-2); color: var(--vp-c-danger-1); }
+.kquiz__btn.is-almost { border-color: var(--vp-c-warning-2); color: var(--vp-c-warning-1); }
+.kquiz__btn.is-good { border-color: var(--vp-c-success-2); color: var(--vp-c-success-1); }
+
+.kquiz__kana.is-link {
+  color: var(--vp-c-brand-1);
+  text-decoration: underline dotted;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
 
 @media print {
   .kquiz { display: none; }
