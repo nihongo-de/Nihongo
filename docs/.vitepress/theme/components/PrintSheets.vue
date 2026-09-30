@@ -4,6 +4,7 @@ import { levelLabels, loadLevel, type Kanji, type Level } from '../data/levels'
 import { n5Groups } from '../data/n5'
 import { n4Groups } from '../data/n4'
 import { kanaSets, toKatakana, type KanaSet } from '../data/kana'
+import { vocabN5 } from '../data/vocab'
 import { loadGlyph, loadRatings, ratings, type Glyph } from '../utils/strokes'
 import { parseRuby } from '../utils/ruby'
 import { toRomaji } from '../utils/romaji'
@@ -12,7 +13,7 @@ import KanjiPicker, { type PickerLevel } from './KanjiPicker.vue'
 import SheetPage, { type SheetItem } from './SheetPage.vue'
 import VocabTable, { type VocabColumn, type VocabRow } from './VocabTable.vue'
 
-type Kind = 'kana' | 'kanji' | 'vocab'
+type Kind = 'kana' | 'kanji' | 'vocab' | 'themes'
 interface LevelKanji extends Kanji {
   level: Level
 }
@@ -29,9 +30,12 @@ const defaults = {
   trace: 3,
   words: false,
   blank: [] as VocabColumn[],
+  topics: vocabN5.map((t) => t.id),
   font: 'm' as 's' | 'm' | 'l'
 }
-const opts = reactive({ ...defaults, kana: [...defaults.kana], blank: [] as VocabColumn[] })
+const opts = reactive({ ...defaults, kana: [...defaults.kana], blank: [] as VocabColumn[], topics: [...defaults.topics] })
+const isList = computed(() => opts.kind === 'vocab' || opts.kind === 'themes')
+const wordRows = computed(() => opts.kind === 'themes' || opts.words)
 
 const setLabels: Record<KanaSet, string> = {
   basic: 'Grundzeichen',
@@ -136,6 +140,11 @@ const sheetTitle = computed(() =>
 const romajiList = (s: string) => (s ? s.split('・').map((r) => toRomaji(r)).join(', ') : '')
 
 const vocabRows = computed<VocabRow[]>(() => {
+  if (opts.kind === 'themes') {
+    return vocabN5
+      .filter((t) => opts.topics.includes(t.id))
+      .flatMap((t) => t.words.map((w) => ({ word: w.word, reading: w.kana === w.word ? '' : w.kana, romaji: w.romaji, de: w.de })))
+  }
   if (opts.words) {
     const seen = new Set<string>()
     return selectedKanji.value.flatMap((k) => {
@@ -153,9 +162,13 @@ const vocabRows = computed<VocabRow[]>(() => {
   })
 })
 const withoutExample = computed(() => selectedKanji.value.filter((k) => !k.ex).length)
-const vocabTitle = computed(() => `${opts.words ? 'Beispielwörter' : 'Kanji-Vokabeln'} ${levelsText.value}`)
+const vocabTitle = computed(() => {
+  if (opts.kind !== 'themes') return `${opts.words ? 'Beispielwörter' : 'Kanji-Vokabeln'} ${levelsText.value}`
+  const topics = vocabN5.filter((t) => opts.topics.includes(t.id))
+  return `Wortschatz N5${topics.length && topics.length <= 3 ? ` – ${topics.map((t) => t.title).join(', ')}` : ''}`
+})
 
-const canPrint = computed(() => (opts.kind === 'vocab' ? vocabRows.value.length > 0 : ready.value && pages.value.length > 0))
+const canPrint = computed(() => (isList.value ? vocabRows.value.length > 0 : ready.value && pages.value.length > 0))
 
 /* Drucken: Vorlagen außerhalb der Seite rendern und nur diese drucken */
 const printing = ref(false)
@@ -167,7 +180,7 @@ async function print() {
   await new Promise((r) => requestAnimationFrame(r))
   await document.fonts.ready
   const style = document.createElement('style')
-  style.textContent = `@page { size: A4; margin: ${opts.kind === 'vocab' ? '12mm' : '0'}; }`
+  style.textContent = `@page { size: A4; margin: ${isList.value ? '12mm' : '0'}; }`
   document.head.append(style)
   document.documentElement.classList.add('print-sheets')
   window.addEventListener(
@@ -223,6 +236,7 @@ onMounted(async () => {
       <label><input v-model="opts.kind" type="radio" value="kana" /> Kana-Schreibblatt</label>
       <label><input v-model="opts.kind" type="radio" value="kanji" /> Kanji-Schreibblatt</label>
       <label><input v-model="opts.kind" type="radio" value="vocab" /> Kanji-Vokabelliste</label>
+      <label><input v-model="opts.kind" type="radio" value="themes" /> Wortschatz nach Themen</label>
     </fieldset>
 
     <template v-if="opts.kind === 'kana'">
@@ -268,13 +282,26 @@ onMounted(async () => {
       </fieldset>
     </template>
 
+    <fieldset v-else-if="opts.kind === 'themes'" class="ps__group is-block">
+      <legend>Themen <span class="ps__muted">· {{ vocabRows.length }} Wörter</span></legend>
+      <div class="ps__quick">
+        <button type="button" @click="opts.topics = vocabN5.map((t) => t.id)">Alle</button>
+        <button type="button" @click="opts.topics = []">Keine</button>
+      </div>
+      <div class="ps__topics">
+        <label v-for="t in vocabN5" :key="t.id">
+          <input v-model="opts.topics" type="checkbox" :value="t.id" /> {{ t.title }} <span class="ps__muted">{{ t.words.length }}</span>
+        </label>
+      </div>
+    </fieldset>
+
     <fieldset v-else class="ps__group is-block">
       <legend>Kanji auswählen <span class="ps__muted">· {{ selected.size }} ausgewählt</span></legend>
       <KanjiPicker v-model="selected" :levels="LEVELS" :weak="weak" />
     </fieldset>
 
-    <template v-if="opts.kind === 'vocab'">
-      <fieldset class="ps__group">
+    <template v-if="isList">
+      <fieldset v-if="opts.kind === 'vocab'" class="ps__group">
         <legend>Inhalt</legend>
         <label><input v-model="opts.words" type="radio" :value="false" /> Kanji mit Lesungen</label>
         <label><input v-model="opts.words" type="radio" :value="true" /> Beispielwörter (N5 &amp; N4)</label>
@@ -282,7 +309,7 @@ onMounted(async () => {
       <fieldset class="ps__group">
         <legend>Zum Abfragen leer lassen</legend>
         <label v-for="(label, col) in columnLabels" :key="col">
-          <input v-model="opts.blank" type="checkbox" :value="col" /> {{ col === 'word' && opts.words ? 'Wort' : col === 'reading' && opts.words ? 'Hiragana' : label }}
+          <input v-model="opts.blank" type="checkbox" :value="col" /> {{ col === 'word' && wordRows ? 'Wort' : col === 'reading' && wordRows ? 'Kana' : label }}
         </label>
       </fieldset>
       <fieldset class="ps__group">
@@ -316,7 +343,7 @@ onMounted(async () => {
 
     <div class="ps__actions">
       <button type="button" class="ps__btn is-primary" :disabled="!canPrint || printing" @click="print">
-        <template v-if="opts.kind === 'vocab'">Drucken · {{ vocabRows.length }} {{ opts.words ? 'Wörter' : 'Kanji' }}</template>
+        <template v-if="isList">Drucken · {{ vocabRows.length }} {{ wordRows ? 'Wörter' : 'Kanji' }}</template>
         <template v-else-if="!ready">Strichfolgen werden geladen …</template>
         <template v-else>Drucken · {{ pages.length }} {{ pages.length === 1 ? 'Seite' : 'Seiten' }}</template>
       </button>
@@ -326,9 +353,9 @@ onMounted(async () => {
     </p>
 
     <div class="ps__preview">
-      <template v-if="opts.kind === 'vocab'">
+      <template v-if="isList">
         <div v-if="vocabRows.length" class="ps__paper is-scroll">
-          <VocabTable :rows="vocabRows" :words="opts.words" :blank="opts.blank" :size="opts.font" :title="vocabTitle" />
+          <VocabTable :rows="vocabRows" :words="wordRows" :blank="opts.blank" :size="opts.font" :title="vocabTitle" />
         </div>
       </template>
       <template v-else-if="pages.length && ready">
@@ -356,9 +383,9 @@ onMounted(async () => {
     <Teleport v-if="printing" to="body">
       <div class="sheet-print">
         <VocabTable
-          v-if="opts.kind === 'vocab'"
+          v-if="isList"
           :rows="vocabRows"
-          :words="opts.words"
+          :words="wordRows"
           :blank="opts.blank"
           :size="opts.font"
           :title="vocabTitle"
@@ -433,6 +460,7 @@ onMounted(async () => {
 .ps__quick button:hover { text-decoration: underline; }
 
 .ps__pick { margin-top: 10px; }
+.ps__topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px 18px; font-size: 14px; }
 .ps__pick label { font-size: 14px; font-weight: 600; }
 
 .ps__chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }

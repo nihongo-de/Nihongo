@@ -1,0 +1,12 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^fuser -k 4175/tcp; npx vitepress preview docs --port 4175$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^npm run build 2>&1 \\| grep -iE \"error\\|warn\\|complete\" \\| head; fuser -k 4175/tcp$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

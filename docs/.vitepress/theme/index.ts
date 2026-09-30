@@ -24,6 +24,9 @@ import ProgressTracker from './components/ProgressTracker.vue'
 import PageActions from './components/PageActions.vue'
 import BookmarkMenu from './components/BookmarkMenu.vue'
 import LearnDashboard from './components/LearnDashboard.vue'
+import VocabList from './components/VocabList.vue'
+import DisplaySettings from './components/DisplaySettings.vue'
+import FormTrainer from './components/FormTrainer.vue'
 
 // Zugeklappte Details-Blöcke beim Drucken aufklappen und danach wieder schließen
 if (inBrowser) {
@@ -42,7 +45,7 @@ export default {
   extends: DefaultTheme,
   Layout: () =>
     h(DefaultTheme.Layout, null, {
-      'nav-bar-content-after': () => [h(BookmarkMenu), h(PrintAllButton)],
+      'nav-bar-content-after': () => [h(DisplaySettings), h(BookmarkMenu), h(PrintAllButton)],
       'doc-before': () => h(PageActions),
       'doc-footer-before': () => h(PageActions, { footer: true }),
       'layout-bottom': () => [h(PrintDialog), h(ProgressTracker)]
@@ -61,5 +64,7 @@ export default {
     app.component('KanjiQuiz', KanjiQuiz)
     app.component('PrintSheets', PrintSheets)
     app.component('LearnDashboard', LearnDashboard)
+    app.component('VocabList', VocabList)
+    app.component('FormTrainer', FormTrainer)
   }
 } satisfies Theme

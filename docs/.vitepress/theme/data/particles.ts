@@ -16,6 +16,12 @@ const q = (jp: string, answer: string, options: string, de: string, why: string)
   why
 })
 
+export const particleSetTitles: Record<string, string> = {
+  grundlagen: 'Grundlagen',
+  ort: 'Ort, Zeit & Richtung',
+  gemischt: 'Gemischt'
+}
+
 export const particleSets: Record<string, ParticleItem[]> = {
   grundlagen: [
     q('私[わたし]＿学生[がくせい]です。', 'は', 'は が を の', 'Ich bin Student.', 'は markiert das Thema: „Was mich betrifft …“'),

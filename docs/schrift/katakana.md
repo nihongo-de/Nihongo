@@ -172,7 +172,7 @@ Japanisch kennt (außer <span lang="ja">ン</span>) keine Konsonanten ohne Vokal
 | **l** und **r** → r-Reihe | *lemon* → <span lang="ja">レモン</span> *remon* |
 | **v** → meist b-Reihe | *violin* → <span lang="ja">バイオリン</span> *baiorin* |
 
-Die Sonderzeichen für Laute wie *fa*, *ti* oder *she* findest du unter [Kana-Kombinationen](./kombinationen#katakana-erweiterungen).
+Die Sonderzeichen für Laute wie *fa*, *ti* oder *she* findest du unter [Kana-Kombinationen](./kombinationen#katakana-erweiterungen). Wie du deinen eigenen Namen schreibst, steht unter [Deutsche Namen in Katakana](../wortschatz/namen).
 
 ## Deutsche Wörter im Japanischen
 

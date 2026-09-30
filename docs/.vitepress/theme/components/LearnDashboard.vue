@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useData, withBase } from 'vitepress'
 import type { DefaultTheme } from 'vitepress/theme'
-import { progress, progressReady, removeBookmark, resetProgress } from '../utils/progress'
+import { downloadBackup, importBackup, progress, progressReady, removeBookmark, resetProgress } from '../utils/progress'
+import { loadRatings, ratings } from '../utils/strokes'
 
 interface Link { text: string; link: string }
 
@@ -28,8 +29,41 @@ const lastHref = computed(() => {
 })
 
 function reset() {
-  if (confirm('Gelernt-Markierungen, Lesezeichen und die letzte Position löschen?')) resetProgress()
+  if (confirm('Gelernt-Markierungen, Lesezeichen, Übungsergebnisse und die letzte Position löschen?')) resetProgress()
 }
+
+const results = computed(() => Object.values(progress.results).sort((a, b) => b.time - a.time))
+const pct = (score: number, total: number) => Math.round((score / total) * 100)
+const dateFmt = new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'short' })
+
+// Selbstbewertungen beim Schreiben (Kana- und Kanji-Quiz, Strichfolge-Dialog)
+const writing = computed(() =>
+  (['Kana', 'Kanji'] as const)
+    .map((label) => {
+      const own = Object.entries(ratings.value).filter(([k]) => /^[\u3040-\u30ff]/.test(k) === (label === 'Kana'))
+      const count = (r: string) => own.filter(([, v]) => v === r).length
+      return { label, good: count('good'), almost: count('almost'), again: count('again'), total: own.length }
+    })
+    .filter((w) => w.total)
+)
+
+const fileInput = ref<HTMLInputElement>()
+const backupMsg = ref('')
+
+async function restore(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file || !confirm('Die Sicherung ersetzt deinen bisherigen Fortschritt in diesem Browser. Fortfahren?')) return
+  try {
+    await importBackup(file)
+    location.reload()
+  } catch (err) {
+    backupMsg.value = (err as Error).message
+  }
+}
+
+onMounted(loadRatings)
 </script>
 
 <template>
@@ -72,10 +106,34 @@ function reset() {
         </ul>
       </template>
 
+      <template v-if="results.length || writing.length">
+        <h3>Übungen</h3>
+        <ul class="dash__results">
+          <li v-for="r in results" :key="r.title">
+            <a :href="withBase(r.path)">{{ r.title }}</a>
+            <span class="dash__score" :class="{ 'is-good': pct(r.score, r.total) >= 80 }">{{ r.score }} / {{ r.total }} · {{ pct(r.score, r.total) }} %</span>
+            <span class="dash__meta">
+              Bestwert {{ r.best }} % · {{ r.runs }}× geübt · zuletzt {{ dateFmt.format(r.time) }}
+            </span>
+          </li>
+          <li v-for="w in writing" :key="w.label">
+            <a :href="withBase(w.label === 'Kana' ? '/uebungen/kana' : '/uebungen/kanji-quiz')">{{ w.label }} schreiben</a>
+            <span class="dash__score">{{ w.good }} / {{ w.total }} sitzen</span>
+            <span class="dash__meta">{{ w.almost }} fast richtig · {{ w.again }} zum Wiederholen</span>
+          </li>
+        </ul>
+      </template>
+
       <p class="dash__note">
-        Dein Fortschritt wird nur in diesem Browser gespeichert.
-        <button type="button" class="dash__reset" @click="reset">Zurücksetzen</button>
+        Dein Fortschritt wird nur in diesem Browser gespeichert. Sichere ihn als Datei, um ihn auf ein anderes Gerät mitzunehmen.
       </p>
+      <div class="dash__backup">
+        <button type="button" @click="downloadBackup">Sichern</button>
+        <button type="button" @click="fileInput?.click()">Wiederherstellen …</button>
+        <button type="button" @click="reset">Zurücksetzen</button>
+        <input ref="fileInput" type="file" accept="application/json,.json" hidden @change="restore" />
+      </div>
+      <p v-if="backupMsg" class="dash__error" role="alert">{{ backupMsg }}</p>
     </template>
   </section>
 </template>
@@ -135,7 +193,31 @@ function reset() {
 .dash__bookmarks button { width: 28px; height: 28px; font-size: 18px; color: var(--vp-c-text-3); }
 .dash__bookmarks button:hover { color: var(--vp-c-brand-1); }
 
+.dash__results { padding: 0; list-style: none; }
+.vp-doc .dash__results li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 12px;
+  margin: 0;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+.vp-doc .dash__results a { text-decoration: none; }
+.dash__score { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--vp-c-text-2); }
+.dash__score.is-good { color: var(--vp-c-green-1); }
+.dash__meta { grid-column: 1 / -1; font-size: 12px; color: var(--vp-c-text-3); }
+
 .dash__note { font-size: 13px; color: var(--vp-c-text-3); }
-.dash__reset { margin-left: 4px; font-size: 13px; color: var(--vp-c-text-2); text-decoration: underline; }
-.dash__reset:hover { color: var(--vp-c-brand-1); }
+.dash__backup { display: flex; flex-wrap: wrap; gap: 8px; }
+.dash__backup button {
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 999px;
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+.dash__backup button:last-of-type { color: var(--vp-c-text-2); background: var(--vp-c-default-soft); }
+.dash__backup button:hover { filter: brightness(1.1); }
+.vp-doc .dash__error { font-size: 13px; color: var(--vp-c-red-1); }
 </style>

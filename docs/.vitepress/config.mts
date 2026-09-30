@@ -12,6 +12,8 @@ const p = {
   hiragana: { text: 'Hiragana ひらがな', link: '/schrift/hiragana' },
   katakana: { text: 'Katakana カタカナ', link: '/schrift/katakana' },
   kombinationen: { text: 'Kana-Kombinationen', link: '/schrift/kombinationen' },
+  satzzeichen: { text: 'Satzzeichen & Schreibregeln', link: '/schrift/satzzeichen' },
+  tippen: { text: 'Japanisch tippen', link: '/schrift/tippen' },
   kanji: { text: 'Kanji 漢字', link: '/schrift/kanji' },
   kanjiN5: { text: 'N5 Kanji', link: '/schrift/kanji-n5' },
   kanjiN4: { text: 'N4 Kanji', link: '/schrift/kanji-n4' },
@@ -37,11 +39,16 @@ const p = {
   vermutung: { text: 'Vermutung – でしょう', link: '/grammatik/vermutung' },
   hoeflichkeit: { text: 'Höflichkeit & Keigo', link: '/grammatik/hoeflichkeit' },
   zahlen: { text: 'Zahlen & Zählwörter', link: '/wortschatz/zahlen' },
+  zeit: { text: 'Zeitangaben', link: '/wortschatz/zeit' },
+  themen: { text: 'Wortschatz nach Themen', link: '/wortschatz/themen' },
+  namen: { text: 'Deutsche Namen in Katakana', link: '/wortschatz/namen' },
   redewendungen: { text: 'Alltagsausdrücke', link: '/wortschatz/redewendungen' },
   kanaQuiz: { text: 'Kana-Quiz', link: '/uebungen/kana' },
   kanjiN5Lesen: { text: 'N5-Kanji lesen', link: '/uebungen/kanji-n5' },
   kanjiQuiz: { text: 'Kanji-Quiz', link: '/uebungen/kanji-quiz' },
   partikelUebungen: { text: 'Partikel-Übungen', link: '/uebungen/partikel' },
+  konjugation: { text: 'Konjugationstrainer', link: '/uebungen/konjugation' },
+  adjektivTrainer: { text: 'Adjektiv-Trainer', link: '/uebungen/adjektive' },
   druckvorlagen: { text: 'Druckvorlagen', link: '/uebungen/druckvorlagen' }
 }
 
@@ -54,7 +61,13 @@ export default withPwa(defineConfig({
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}logo.svg` }],
     ['link', { rel: 'apple-touch-icon', href: `${base}apple-touch-icon-180x180.png` }],
-    ['meta', { name: 'theme-color', content: '#c8372d' }]
+    ['meta', { name: 'theme-color', content: '#c8372d' }],
+    // Anzeige-Einstellungen vor dem ersten Rendern anwenden (siehe utils/settings.ts)
+    [
+      'script',
+      {},
+      "try{var s=JSON.parse(localStorage.getItem('nihongo:settings')||'{}'),c=document.documentElement.classList;if(s.furigana===false)c.add('no-furigana');if(s.romaji===false)c.add('no-romaji')}catch(e){}"
+    ]
   ],
 
   pwa: {
@@ -114,6 +127,7 @@ export default withPwa(defineConfig({
         activeMatch: '^/schrift/',
         items: [
           { text: 'Kana', items: [p.hiragana, p.katakana, p.kombinationen] },
+          { text: 'Praxis', items: [p.satzzeichen, p.tippen] },
           { text: 'Kanji', items: [p.kanji, p.kanjiN5, p.kanjiN4, p.kanjiN3, p.kanjiN2, p.kanjiN1] }
         ]
       },
@@ -123,12 +137,13 @@ export default withPwa(defineConfig({
         activeMatch: '^/grammatik/',
         items: [p.satzbau, p.partikel, p.partikelVergleiche, p.fragewoerter, p.existenz, p.verben, p.adjektive, p.verneinung, p.zeitformen, p.konjunktionen, p.bitten, p.erlaubnis, p.vergleiche, p.adverbien, p.vermutung, p.hoeflichkeit]
       },
-      { text: 'Wortschatz', activeMatch: '^/wortschatz/', items: [p.zahlen, p.redewendungen] },
+      { text: 'Wortschatz', activeMatch: '^/wortschatz/', items: [p.zahlen, p.zeit, p.themen, p.namen, p.redewendungen] },
       {
         text: 'Übungen',
         activeMatch: '^/uebungen/',
         items: [
           { text: 'Quiz', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen] },
+          { text: 'Trainer', items: [p.konjugation, p.adjektivTrainer] },
           { text: 'Zum Ausdrucken', items: [p.druckvorlagen] }
         ]
       }
@@ -141,11 +156,11 @@ export default withPwa(defineConfig({
         text: 'N5 – Einstieg',
         collapsed: false,
         items: [
-          { text: 'Schrift & Laute', items: [p.hiragana, p.laute, p.katakana, p.kombinationen, p.betonung] },
+          { text: 'Schrift & Laute', items: [p.hiragana, p.laute, p.katakana, p.kombinationen, p.betonung, p.satzzeichen, p.tippen] },
           { text: 'Kanji', items: [p.kanji, p.kanjiN5] },
           { text: 'Grammatik', items: [p.satzbau, p.partikel, p.partikelVergleiche, p.fragewoerter, p.existenz, p.verben, p.adjektive, p.verneinung, p.zeitformen, p.konjunktionen, p.bitten, p.erlaubnis, p.vergleiche, p.adverbien, p.vermutung] },
-          { text: 'Wortschatz', items: [p.zahlen, p.redewendungen] },
-          { text: 'Übungen', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen] }
+          { text: 'Wortschatz', items: [p.zahlen, p.zeit, p.themen, p.namen, p.redewendungen] },
+          { text: 'Übungen', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen, p.konjugation, p.adjektivTrainer] }
         ]
       },
       {

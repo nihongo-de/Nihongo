@@ -2,6 +2,8 @@
 import { computed, onMounted, ref } from 'vue'
 import RubyText from './RubyText.vue'
 import StrokeDialog from './StrokeDialog.vue'
+import SpeakButton from './SpeakButton.vue'
+import { parseRuby } from '../utils/ruby'
 import { loadRatings, ratingLabels, ratings } from '../utils/strokes'
 
 const props = defineProps<{
@@ -16,6 +18,7 @@ const props = defineProps<{
 
 const open = ref(false)
 const rating = computed(() => ratings.value[props.k])
+const exPlain = computed(() => (props.ex ? parseRuby(props.ex).map((s) => s.text).join('') : ''))
 onMounted(loadRatings)
 </script>
 
@@ -38,7 +41,7 @@ onMounted(loadRatings)
       <template v-if="kun"><dt>訓</dt><dd>{{ kun }}</dd></template>
     </dl>
     <p v-if="ex" class="kanji__ex">
-      <span lang="ja"><RubyText :text="ex" /></span>
+      <span class="kanji__ex-word"><span lang="ja"><RubyText :text="ex" /></span><SpeakButton :text="exPlain" /></span>
       <small v-if="exDe">{{ exDe }}</small>
     </p>
     <StrokeDialog v-if="open" :text="k" :label="de" @close="open = false" />
@@ -108,6 +111,7 @@ onMounted(loadRatings)
 }
 
 .kanji__ex [lang='ja'] { font-size: 16px; }
+.kanji__ex-word { display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
 .kanji__ex small { font-size: 12px; line-height: 1.4; color: var(--vp-c-text-2); }
 
 .kanji__rating {

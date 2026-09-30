@@ -11,6 +11,7 @@ Hier stellst du dir eigene Vorlagen zum Ausdrucken zusammen:
 - **Kana-Schreibblatt** – Hiragana oder Katakana; ganze Gruppen (Grundzeichen, Dakuten, Yōon, erweiterte Katakana) oder gezielt einzelne Zeichen.
 - **Kanji-Schreibblatt** – beliebige Kanji von N5 bis N1; über jeder Zeile stehen Bedeutung, Lesungen und Strichzahl.
 - **Kanji-Vokabelliste** – Kanji, Lesung, Rōmaji und deutsche Bedeutung als Tabelle; einzelne Spalten kannst du zum Abfragen leer lassen.
+- **Wortschatz nach Themen** – der N5-Grundwortschatz aus [Wortschatz nach Themen](../wortschatz/themen) (Familie, Essen, Verkehr …), frei kombinierbar und ebenfalls mit leeren Spalten zum Abfragen.
 
 Auf den Schreibblättern zeigt das erste Feld jeder Zeile das Zeichen mit **roten Nummern an den Strichen** – so erkennst du die Strichfolge.
 Danach folgen graue Vorlagen zum Nachspuren und leere Felder zum freien Schreiben.

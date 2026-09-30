@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
-import { particleSets } from '../data/particles'
+import { computed, reactive, watch } from 'vue'
+import { particleSets, particleSetTitles } from '../data/particles'
+import { recordResult } from '../utils/progress'
 import RubyText from './RubyText.vue'
 
 const props = defineProps<{ set: string }>()
@@ -28,6 +29,16 @@ const blank = (item: { answers: string[] }, i: number) =>
 function reset() {
   for (const key of Object.keys(chosen)) delete chosen[Number(key)]
 }
+
+watch(answered, (n) => {
+  if (n && n === items.value.length)
+    recordResult(
+      `partikel:${props.set}`,
+      { path: `/uebungen/partikel#${props.set}`, title: `Partikel · ${particleSetTitles[props.set] ?? props.set}` },
+      right.value,
+      n
+    )
+})
 </script>
 
 <template>

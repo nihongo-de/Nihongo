@@ -56,6 +56,10 @@
   font-weight: 400;
 }
 
+/* Globale Schalter (DisplaySettings): Platz bleibt erhalten, damit nichts springt */
+html.no-furigana .vp-doc rt { visibility: hidden; }
+html.no-romaji .vp-doc .ex__ro { display: none; }
+
 /* Tabellen: dezent statt Excel-Gitter */
 .vp-doc table {
   display: table;
@@ -391,4 +395,19 @@ a.info-card:hover { color: inherit; }
   .vp-doc .kana-chart .kana-cell { border-radius: 6px; }
   .vp-doc .kana-chart .kana-cell__kana { font-size: 20px; }
   .vp-doc .kana-chart .kana-cell__romaji { margin-top: 0; font-size: 9px; }
+}
+
+/* Tasten (Seite „Japanisch tippen“) */
+.vp-doc kbd {
+  display: inline-block;
+  padding: 0 6px;
+  border: 1px solid var(--vp-c-divider);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.85em;
+  line-height: 1.6;
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg-soft);
+  white-space: nowrap;
 }

@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { kanaSets, kanaWords, toKatakana, type KanaSet } from '../data/kana'
 import { loadGlyph, loadRatings, rate as saveRating, ratings, type Glyph, type Rating } from '../utils/strokes'
+import { recordResult } from '../utils/progress'
 import WritingPractice from './WritingPractice.vue'
 import StrokeDialog from './StrokeDialog.vue'
 
@@ -248,6 +249,10 @@ function onKey(e: KeyboardEvent) {
 }
 
 watch(phase, (p) => p !== 'run' && clearTimeout(timer))
+const MODE_LABELS = { type: 'Eintippen', flash: 'Flashcards', write: 'Schreiben' }
+watch(phase, (p) => {
+  if (p === 'done') recordResult(`kana:${mode.value}`, { path: '/uebungen/kana', title: `Kana-Quiz · ${MODE_LABELS[mode.value]}` }, firstTry.value, total.value)
+})
 const resultLabel = computed(
   () => ({ type: 'auf Anhieb richtig', flash: 'auf Anhieb gewusst', write: 'sicher geschrieben' })[mode.value]
 )

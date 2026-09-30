@@ -8,6 +8,7 @@ import WritingPractice from './WritingPractice.vue'
 import StrokeDialog from './StrokeDialog.vue'
 import KanjiPicker from './KanjiPicker.vue'
 import { loadGlyph, loadRatings, rate, ratings, type Glyph, type Rating } from '../utils/strokes'
+import { recordResult } from '../utils/progress'
 
 type Mode = 'choice' | 'write' | 'flash'
 interface Item extends Kanji {
@@ -186,6 +187,11 @@ watch(phase, (p) => {
   if (p !== 'run') {
     clearTimeout(timer)
     clearTimeout(advance)
+  }
+  if (p === 'done') {
+    const id = mode.value === 'choice' ? `choice-${ask.value}` : mode.value
+    const label = mode.value === 'choice' ? `Multiple Choice (${ask.value === 'meaning' ? 'Bedeutung' : 'Lesung'})` : mode.value === 'write' ? 'Schreiben' : 'Flashcards'
+    recordResult(`kanji:${id}`, { path: '/uebungen/kanji-quiz', title: `Kanji-Quiz · ${label}` }, firstTry.value, total.value)
   }
 })
 watch(selected, (s) => {

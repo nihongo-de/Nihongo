@@ -21,7 +21,7 @@ defineProps<{ rows: VocabRow[]; words: boolean; blank: VocabColumn[]; size: 's' 
       <thead>
         <tr>
           <th>{{ words ? 'Wort' : 'Kanji' }}</th>
-          <th>{{ words ? 'Hiragana' : 'Lesungen' }}</th>
+          <th>{{ words ? 'Kana' : 'Lesungen' }}</th>
           <th>Rōmaji</th>
           <th>Deutsch</th>
         </tr>

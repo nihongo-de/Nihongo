@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import RubyText from './RubyText.vue'
+import SpeakButton from './SpeakButton.vue'
+import { parseRuby } from '../utils/ruby'
 
 const props = defineProps<{
   /** Japanisch. Syntax: 漢字[かんじ] = Furigana, {は} = Hervorhebung */
@@ -18,10 +20,13 @@ const parts = computed(() =>
       return { mark, text: mark ? chunk.slice(1, -1) : chunk }
     })
 )
+
+const plain = computed(() => parseRuby(props.jp.replace(/[{}]/g, '')).map((s) => s.text).join(''))
 </script>
 
 <template>
   <div class="ex">
+    <SpeakButton class="ex__speak" :text="plain" />
     <p class="ex__jp" lang="ja">
       <component :is="part.mark ? 'mark' : 'span'" v-for="(part, pi) in parts" :key="pi">
         <RubyText :text="part.text" />
@@ -34,14 +39,17 @@ const parts = computed(() =>
 
 <style scoped>
 .ex {
+  position: relative;
   margin: 12px 0;
-  padding: 14px 18px;
+  padding: 14px 44px 14px 18px;
   border-radius: 12px;
   background: var(--vp-c-bg-soft);
   border-left: 4px solid var(--vp-c-brand-1);
 }
 
 .ex p { margin: 0; }
+
+.ex__speak { position: absolute; top: 10px; right: 8px; }
 
 .ex__jp {
   font-size: 19px;

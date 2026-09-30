@@ -158,3 +158,5 @@ Alle anderen Tage: Zahl + <span lang="ja">にち</span> (<span lang="ja">十一�
 ::: tip Reihenfolge: vom Großen zum Kleinen
 Datum und Adresse werden **vom Großen zum Kleinen** geschrieben: <span lang="ja">2025年4月1日</span> = Jahr, Monat, Tag.
 :::
+
+Wochentage, <span lang="ja">今日・明日・来週</span> und Zeitspannen findest du unter [Zeitangaben](./zeit).

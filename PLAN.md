@@ -15,8 +15,8 @@ Legende: `[ ]` offen · `[~]` teilweise vorhanden · `[x]` erledigt
 - [x] „Weiter, wo du aufgehört hast“ im Lesezeichen-Menü und auf der Startseite
 - [x] Lesezeichen/Favoriten: Stern auf jeder Seite, Liste im Menü der Navigationsleiste und auf der Startseite
 - [x] Haken im Lernpfad für gelernte Seiten, Fortschrittsbalken pro Stufe auf der Startseite
-- [ ] Fortschritt lokal sichern
-- [ ] Übungsergebnisse (Kana-, Kanji- und Partikel-Quiz) in die Fortschrittsübersicht einbeziehen
+- [x] Fortschritt lokal sichern: „Sichern“ lädt alle `nihongo:*`-Daten als JSON-Datei herunter, „Wiederherstellen …“ spielt sie wieder ein (Startseite → Dein Fortschritt)
+- [x] Übungsergebnisse (Kana-, Kanji- und Partikel-Quiz) in die Fortschrittsübersicht einbeziehen: letzter Durchgang, Bestwert, Anzahl; dazu Schreib-Selbstbewertungen für Kana und Kanji
 
 ---
 
@@ -46,22 +46,22 @@ Legende: `[ ]` offen · `[~]` teilweise vorhanden · `[x]` erledigt
 
 ### Wortschatz
 
-- [ ] Zeitangaben: 今日/明日/昨日, 今週/来週/先週, 毎〜, Wochentage (Querverweis zu *Zahlen → Datum*)
-- [ ] Themenlisten: Familie (eigene vs. fremde), Körper, Farben, Essen & Trinken, Verkehr, Wetter, Einkaufen
-- [ ] N5-Vokabelliste nach Themen (als Datenbasis für Karteikarten und Druckvorlagen)
-- [ ] Deutsche Namen in Katakana schreiben
+- [x] **Zeitangaben** (`wortschatz/zeit.md`): 今日/明日/昨日, 先週/今週/来週 … als Tabelle mit Sonderlesungen (今年, 去年), Tageszeiten (今朝, ゆうべ), Wochentage mit Elementen, Jahreszeiten, Regel „に oder nicht“, Zeitspannen (〜時間, 〜か月), ごろ/ぐらい, から〜まで; Querverweis zu *Zahlen → Datum*
+- [x] **Themenlisten** (`wortschatz/themen.md`): Familie (eigene vs. fremde als Tabelle), Menschen & Berufe, Körper, Farben (い-Adjektiv vs. Nomen + の), Essen & Trinken, Verkehr, Orte, Wetter & Natur, Einkaufen, Kleidung (着る/履く/かぶる/かける), Wohnen, Schule & Arbeit, Freizeit, Verben, Adjektive – je mit Erklärung, Beispielen und `<VocabList>` (Abdecken-Modus)
+- [x] **N5-Vokabelliste nach Themen** (`data/vocab.ts`, ~380 Wörter in Ruby-Syntax, Rōmaji automatisch) – auch als Druckvorlage „Wortschatz nach Themen“; Grundlage für die Karteikarten
+- [x] **Deutsche Namen in Katakana** (`wortschatz/namen.md`): Regeln für Vokale (-er, ä/ö/ü, ei/eu) und Konsonanten (sch, ch, z, w, st-), häufige Vor- und Nachnamen, Länder & Städte, Anleitung, Schnelltest
 
 ### Schrift & Praxis
 
-- [ ] Satzzeichen & Schreibkonventionen: 。、「」『』・ー〜, Leerzeichen, Zahlen im Text
-- [ ] Japanisch tippen: IME am PC/Smartphone, Eingabe von ん (nn), っ (doppelter Konsonant, xtu/ltu), ー, Umwandlung in Kanji
+- [x] **Satzzeichen & Schreibkonventionen** (`schrift/satzzeichen.md`): 。、「」『』・ー〜……, ？！, wörtliche Rede, keine Leerzeichen (分かち書き), voll-/halbbreit, Zahlen im Text (1,000 = tausend), waagerecht/senkrecht
+- [x] **Japanisch tippen** (`schrift/tippen.md`): IME einrichten (Windows, macOS, Linux, iOS, Android), Rōmaji-Eingabe (nn, っ, xtu/ltu, ー, thi, …), Umwandlung (Leertaste, F6–F10, Satzteile), Flick-Eingabe, Handschrift
 
 ### Übungen & Features
 
-- [ ] **Audio** per Web Speech API (`speechSynthesis`, ja-JP) für `<Ex>`, Kana-Tabellen und KanjiCards
-- [ ] **Globaler Schalter für Furigana und Rōmaji** in allen `<Ex>`-Sätzen
-- [ ] **Konjugationstrainer (Stufe N5)**: ます/ません/ました/ませんでした, Wörterbuch-, ない-, た-, て-Form; Eingabe in Rōmaji mit Umwandlung in Kana; Formen wählbar; Fehlerstatistik in localStorage
-- [ ] **Adjektiv-Trainer**: い/な × Gegenwart/Vergangenheit × bejaht/verneint, Falle いい → よくない
+- [x] **Audio** per Web Speech API (`utils/settings.ts` → `speak()`, `<SpeakButton>`): Lautsprecher an jedem `<Ex>`, am Beispielwort der KanjiCards, in den Vokabellisten und in den Trainern; Kana-Tabellen mit Schalter „Anhören“. Erscheint nur, wenn eine japanische Stimme installiert ist; Tempo und Stimme im Menü „あ“
+- [x] **Globaler Schalter für Furigana und Rōmaji** (Menü „あ“ in der Navigationsleiste, localStorage `nihongo:settings`, per Inline-Skript vor dem ersten Rendern angewendet): Furigana auf allen Seiten, Rōmaji in `<Ex>`-Sätzen
+- [x] **Konjugationstrainer (Stufe N5)** (`uebungen/konjugation.md`, `<FormTrainer deck="verben">`): ます/ません/ました/ませんでした, Wörterbuch-, ない-, た-, て-Form für 53 Verben; Rōmaji werden beim Tippen in Kana umgewandelt (`utils/kanaInput.ts`); Formen und Verbgruppen wählbar; Regel-Erklärung bei Fehlern; Trefferquote je Form in localStorage; Ergebnis in der Fortschrittsübersicht
+- [x] **Adjektiv-Trainer** (`uebungen/adjektive.md`, gleiche Komponente): い/な × verneint/Vergangenheit/verneinte Vergangenheit × einfach/höflich, Varianten (くありません, ではありません …) akzeptiert, Fallen いい → よくない, 〜かったです, きれい/嫌い
 - [ ] **Zählwort-Quiz**: Lautänderungen (いっぽん/さんぼん/ろっぴき …)
 - [ ] **Uhrzeit- und Datum-Quiz**: 4時 = よじ, 9時 = くじ, ついたち/はつか/ようか
 - [ ] **Satzbau-Puzzle**: Wortblöcke per Drag & Drop in die richtige Reihenfolge bringen
