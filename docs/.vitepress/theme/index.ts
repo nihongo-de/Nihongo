@@ -20,6 +20,10 @@ import KanjiQuiz from './components/KanjiQuiz.vue'
 import PrintSheets from './components/PrintSheets.vue'
 import PrintAllButton from './components/PrintAllButton.vue'
 import PrintDialog from './components/PrintDialog.vue'
+import ProgressTracker from './components/ProgressTracker.vue'
+import PageActions from './components/PageActions.vue'
+import BookmarkMenu from './components/BookmarkMenu.vue'
+import LearnDashboard from './components/LearnDashboard.vue'
 
 // Zugeklappte Details-Blöcke beim Drucken aufklappen und danach wieder schließen
 if (inBrowser) {
@@ -38,8 +42,10 @@ export default {
   extends: DefaultTheme,
   Layout: () =>
     h(DefaultTheme.Layout, null, {
-      'nav-bar-content-after': () => h(PrintAllButton),
-      'layout-bottom': () => h(PrintDialog)
+      'nav-bar-content-after': () => [h(BookmarkMenu), h(PrintAllButton)],
+      'doc-before': () => h(PageActions),
+      'doc-footer-before': () => h(PageActions, { footer: true }),
+      'layout-bottom': () => [h(PrintDialog), h(ProgressTracker)]
     }),
   enhanceApp({ app }) {
     app.component('KanaChart', KanaChart)
@@ -54,5 +60,6 @@ export default {
     app.component('KanaQuiz', KanaQuiz)
     app.component('KanjiQuiz', KanjiQuiz)
     app.component('PrintSheets', PrintSheets)
+    app.component('LearnDashboard', LearnDashboard)
   }
 } satisfies Theme

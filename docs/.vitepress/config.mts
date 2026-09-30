@@ -4,6 +4,47 @@ import { withPwa } from '@vite-pwa/vitepress'
 // Set by the deploy workflow from GitHub Pages ("/" for nihongo-de.github.io, "/<repo>/" otherwise)
 const base = process.env.BASE_PATH || '/'
 
+// Alle Seiten einmal definiert; Navigationsleiste (nach Rubrik) und Lernpfad (nach JLPT) greifen darauf zu
+const p = {
+  ueberblick: { text: 'Japanisch auf einen Blick', link: '/start/' },
+  lerntipps: { text: 'Die 12 wichtigsten Lerntipps', link: '/start/lerntipps' },
+  jlpt: { text: 'JLPT & GER-Niveaus', link: '/start/jlpt' },
+  hiragana: { text: 'Hiragana ひらがな', link: '/schrift/hiragana' },
+  katakana: { text: 'Katakana カタカナ', link: '/schrift/katakana' },
+  kombinationen: { text: 'Kana-Kombinationen', link: '/schrift/kombinationen' },
+  kanji: { text: 'Kanji 漢字', link: '/schrift/kanji' },
+  kanjiN5: { text: 'N5 Kanji', link: '/schrift/kanji-n5' },
+  kanjiN4: { text: 'N4 Kanji', link: '/schrift/kanji-n4' },
+  kanjiN3: { text: 'N3 Kanji', link: '/schrift/kanji-n3' },
+  kanjiN2: { text: 'N2 Kanji', link: '/schrift/kanji-n2' },
+  kanjiN1: { text: 'N1 Kanji', link: '/schrift/kanji-n1' },
+  laute: { text: 'Laute & Mora', link: '/aussprache/grundlagen' },
+  betonung: { text: 'Betonung (Tonhöhenakzent)', link: '/aussprache/betonung' },
+  satzbau: { text: 'Satzbau', link: '/grammatik/satzbau' },
+  partikel: { text: 'Partikel', link: '/grammatik/partikel' },
+  partikelVergleiche: { text: 'Partikel im Vergleich', link: '/grammatik/partikel-vergleiche' },
+  fragewoerter: { text: 'Fragewörter & こそあど', link: '/grammatik/fragewoerter' },
+  existenz: { text: 'Existenz – ある & いる', link: '/grammatik/existenz' },
+  verben: { text: 'Verben', link: '/grammatik/verben' },
+  adjektive: { text: 'Adjektive', link: '/grammatik/adjektive' },
+  verneinung: { text: 'Verneinung', link: '/grammatik/verneinung' },
+  zeitformen: { text: 'Zeitformen & Aspekt', link: '/grammatik/zeitformen' },
+  konjunktionen: { text: 'Sätze verbinden', link: '/grammatik/konjunktionen' },
+  bitten: { text: 'Bitten, Wünsche & Vorschläge', link: '/grammatik/bitten' },
+  erlaubnis: { text: 'Dürfen, müssen, nicht dürfen', link: '/grammatik/erlaubnis' },
+  vergleiche: { text: 'Vergleiche', link: '/grammatik/vergleiche' },
+  adverbien: { text: 'Adverbien & Häufigkeit', link: '/grammatik/adverbien' },
+  vermutung: { text: 'Vermutung – でしょう', link: '/grammatik/vermutung' },
+  hoeflichkeit: { text: 'Höflichkeit & Keigo', link: '/grammatik/hoeflichkeit' },
+  zahlen: { text: 'Zahlen & Zählwörter', link: '/wortschatz/zahlen' },
+  redewendungen: { text: 'Alltagsausdrücke', link: '/wortschatz/redewendungen' },
+  kanaQuiz: { text: 'Kana-Quiz', link: '/uebungen/kana' },
+  kanjiN5Lesen: { text: 'N5-Kanji lesen', link: '/uebungen/kanji-n5' },
+  kanjiQuiz: { text: 'Kanji-Quiz', link: '/uebungen/kanji-quiz' },
+  partikelUebungen: { text: 'Partikel-Übungen', link: '/uebungen/partikel' },
+  druckvorlagen: { text: 'Druckvorlagen', link: '/uebungen/druckvorlagen' }
+}
+
 export default withPwa(defineConfig({
   base,
   lang: 'de-DE',
@@ -67,72 +108,58 @@ export default withPwa(defineConfig({
     logo: '/logo.svg',
 
     nav: [
-      { text: 'Start', link: '/start/' },
-      { text: 'Schrift', link: '/schrift/hiragana' },
-      { text: 'Aussprache', link: '/aussprache/grundlagen' },
-      { text: 'Grammatik', link: '/grammatik/satzbau' },
-      { text: 'Wortschatz', link: '/wortschatz/zahlen' },
-      { text: 'Übungen', link: '/uebungen/kana' }
-    ],
-
-    sidebar: [
-      {
-        text: 'Start',
-        items: [
-          { text: 'Japanisch auf einen Blick', link: '/start/' },
-          { text: 'Die 12 wichtigsten Lerntipps', link: '/start/lerntipps' },
-          { text: 'JLPT & GER-Niveaus', link: '/start/jlpt' }
-        ]
-      },
+      { text: 'Start', activeMatch: '^/start/', items: [p.ueberblick, p.lerntipps, p.jlpt] },
       {
         text: 'Schrift',
+        activeMatch: '^/schrift/',
         items: [
-          { text: 'Hiragana ひらがな', link: '/schrift/hiragana' },
-          { text: 'Katakana カタカナ', link: '/schrift/katakana' },
-          { text: 'Kana-Kombinationen', link: '/schrift/kombinationen' },
-          { text: 'Kanji 漢字', link: '/schrift/kanji' },
-          { text: 'N5 Kanji', link: '/schrift/kanji-n5' },
-          { text: 'N4 Kanji', link: '/schrift/kanji-n4' },
-          { text: 'N3 Kanji', link: '/schrift/kanji-n3' },
-          { text: 'N2 Kanji', link: '/schrift/kanji-n2' },
-          { text: 'N1 Kanji', link: '/schrift/kanji-n1' }
+          { text: 'Kana', items: [p.hiragana, p.katakana, p.kombinationen] },
+          { text: 'Kanji', items: [p.kanji, p.kanjiN5, p.kanjiN4, p.kanjiN3, p.kanjiN2, p.kanjiN1] }
         ]
       },
-      {
-        text: 'Aussprache',
-        items: [
-          { text: 'Laute & Mora', link: '/aussprache/grundlagen' },
-          { text: 'Betonung (Tonhöhenakzent)', link: '/aussprache/betonung' }
-        ]
-      },
+      { text: 'Aussprache', activeMatch: '^/aussprache/', items: [p.laute, p.betonung] },
       {
         text: 'Grammatik',
-        items: [
-          { text: 'Satzbau', link: '/grammatik/satzbau' },
-          { text: 'Partikel', link: '/grammatik/partikel' },
-          { text: 'Partikel im Vergleich', link: '/grammatik/partikel-vergleiche' },
-          { text: 'Verben', link: '/grammatik/verben' },
-          { text: 'Adjektive', link: '/grammatik/adjektive' },
-          { text: 'Höflichkeit & Keigo', link: '/grammatik/hoeflichkeit' }
-        ]
+        activeMatch: '^/grammatik/',
+        items: [p.satzbau, p.partikel, p.partikelVergleiche, p.fragewoerter, p.existenz, p.verben, p.adjektive, p.verneinung, p.zeitformen, p.konjunktionen, p.bitten, p.erlaubnis, p.vergleiche, p.adverbien, p.vermutung, p.hoeflichkeit]
       },
-      {
-        text: 'Wortschatz',
-        items: [
-          { text: 'Zahlen & Zählwörter', link: '/wortschatz/zahlen' },
-          { text: 'Alltagsausdrücke', link: '/wortschatz/redewendungen' }
-        ]
-      },
+      { text: 'Wortschatz', activeMatch: '^/wortschatz/', items: [p.zahlen, p.redewendungen] },
       {
         text: 'Übungen',
+        activeMatch: '^/uebungen/',
         items: [
-          { text: 'Kana-Quiz', link: '/uebungen/kana' },
-          { text: 'N5-Kanji lesen', link: '/uebungen/kanji-n5' },
-          { text: 'Kanji-Quiz', link: '/uebungen/kanji-quiz' },
-          { text: 'Partikel-Übungen', link: '/uebungen/partikel' },
-          { text: 'Druckvorlagen', link: '/uebungen/druckvorlagen' }
+          { text: 'Quiz', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen] },
+          { text: 'Zum Ausdrucken', items: [p.druckvorlagen] }
         ]
       }
+    ],
+
+    // Lernpfad: alles, was man für eine JLPT-Stufe kennen sollte, mit anschließenden Übungen
+    sidebar: [
+      { text: 'Erste Schritte', collapsed: false, items: [p.ueberblick, p.lerntipps, p.jlpt] },
+      {
+        text: 'N5 – Einstieg',
+        collapsed: false,
+        items: [
+          { text: 'Schrift & Laute', items: [p.hiragana, p.laute, p.katakana, p.kombinationen, p.betonung] },
+          { text: 'Kanji', items: [p.kanji, p.kanjiN5] },
+          { text: 'Grammatik', items: [p.satzbau, p.partikel, p.partikelVergleiche, p.fragewoerter, p.existenz, p.verben, p.adjektive, p.verneinung, p.zeitformen, p.konjunktionen, p.bitten, p.erlaubnis, p.vergleiche, p.adverbien, p.vermutung] },
+          { text: 'Wortschatz', items: [p.zahlen, p.redewendungen] },
+          { text: 'Übungen', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen] }
+        ]
+      },
+      {
+        text: 'N4 – Grundstufe',
+        collapsed: true,
+        items: [
+          { text: 'Kanji', items: [p.kanjiN4] },
+          { text: 'Grammatik', items: [p.hoeflichkeit] }
+        ]
+      },
+      { text: 'N3 – Mittelstufe', collapsed: true, items: [{ text: 'Kanji', items: [p.kanjiN3] }] },
+      { text: 'N2 – Fortgeschritten', collapsed: true, items: [{ text: 'Kanji', items: [p.kanjiN2] }] },
+      { text: 'N1 – Experte', collapsed: true, items: [{ text: 'Kanji', items: [p.kanjiN1] }] },
+      { text: 'Werkzeuge', collapsed: true, items: [p.druckvorlagen] }
     ],
 
     search: {

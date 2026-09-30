@@ -98,6 +98,8 @@ Den ausführlichen Vergleich findest du unter [は vs. が](./partikel-vergleich
   <div class="info-card"><span class="info-card__label">Wandel zu …</span><span class="info-card__text" lang="ja">医者になります。</span><span class="info-card__text">Ich werde Arzt.</span></div>
 </div>
 
+ある/いる und Positionswörter wie <span lang="ja">上・下・隣</span> findest du unter [Existenz](./existenz).
+
 ::: warning Zeitangaben ohne に
 Relative Zeitwörter bekommen **kein** <span lang="ja">に</span>: <span lang="ja">今日、明日、昨日、毎日、今</span>.
 Richtig: <span lang="ja">明日行きます</span> – falsch: ~~<span lang="ja">明日に行きます</span>~~.
@@ -168,6 +170,8 @@ Mit Verneinung und Fragewort bedeutet <span lang="ja">も</span> „überhaupt n
 Nach einem Satz bedeutet <span lang="ja">から</span> „weil“:
 
 <Ex jp="雨[あめ]ですから、行[い]きません。" ro="ame desu kara, ikimasen." de="Weil es regnet, gehe ich nicht." />
+
+Mehr zu „weil“, „aber“, „bevor“ und Co. unter [Sätze verbinden](./konjunktionen).
 
 ## や – und so weiter {#ya}
 

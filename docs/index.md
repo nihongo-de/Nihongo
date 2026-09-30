@@ -54,6 +54,8 @@ features:
 
 <div class="vp-doc" style="max-width: 1152px; margin: 64px auto 0; padding: 0 24px;">
 
+<LearnDashboard />
+
 ## Dein Lernpfad
 
 <div class="roadmap">

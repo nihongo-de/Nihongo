@@ -43,8 +43,18 @@ docs/
 │   ├── satzbau.md               SOV, Thema-Kommentar, Satzschablone
 │   ├── partikel.md              Alle Kernpartikel mit Merksätzen
 │   ├── partikel-vergleiche.md   は/が, に/で, に/へ, と/や im Direktvergleich
+│   ├── fragewoerter.md          こそあど, Fragewörter, 何か/何も/何でも
+│   ├── existenz.md              ある/いる, Satzmuster, Positionswörter
 │   ├── verben.md                Gruppen, ます-, て-, ない-Form
 │   ├── adjektive.md             い- vs. な-Adjektive
+│   ├── verneinung.md            Verneinung aller Wortarten, Adverbien, Ja/Nein-Falle
+│   ├── zeitformen.md            Zwei Zeitstufen, 〜ている, もう/まだ
+│   ├── konjunktionen.md         て-Kette, から, が/けど, 前に/後で, たり, とき
+│   ├── bitten.md                てください, たい, ほしい, ましょう/ませんか
+│   ├── erlaubnis.md             てもいい, てはいけない, なければならない, なくてもいい
+│   ├── vergleiche.md            より, のほうが, 一番, 同じ, ほど〜ない
+│   ├── adverbien.md             Häufigkeit, Grad, すぐ/また/ずっと …
+│   ├── vermutung.md             でしょう/だろう, たぶん/きっと
 │   └── hoeflichkeit.md          Sprachebenen, Keigo, Anreden, Uchi/Soto
 └── wortschatz/
     ├── zahlen.md                Zahlen, Zählwörter, Uhrzeit, Datum

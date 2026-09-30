@@ -102,6 +102,8 @@ Sprich die Regel als Rhythmus laut vor dich hin, bis sie sitzt – viele Lernend
 <Ex jp="朝[あさ]ご飯[はん]を食[た]{べて}、学校[がっこう]へ行[い]きます。" ro="asagohan o tabete, gakkō e ikimasu." de="Ich frühstücke und gehe (dann) zur Schule. – Handlungskette" />
 <Ex jp="写真[しゃしん]を撮[と]{ってもいいですか}。" ro="shashin o totte mo ii desu ka." de="Darf ich ein Foto machen? – Erlaubnis: 〜てもいい" />
 
+<span lang="ja">〜ている</span> kann noch mehr als „gerade dabei“ – alle drei Bedeutungen unter [Zeitformen & Aspekt](./zeitformen#te-iru). Erlaubnis, Verbot und Pflicht stehen unter [Dürfen, müssen, nicht dürfen](./erlaubnis).
+
 ## Die Wörterbuch- und ない-Form (neutral)
 
 Unter Freunden und in Nebensätzen nutzt man die **einfache Form**. Die Verneinung bildest du so:
@@ -125,6 +127,8 @@ Unter Freunden und in Nebensätzen nutzt man die **einfache Form**. Die Verneinu
 - Verben auf <span lang="ja">う</span> werden zu **わ**ない: <span lang="ja">買う → 買**わ**ない</span> (nicht ~~<span lang="ja">買あない</span>~~).
 - <span lang="ja">ある</span> (es gibt) wird einfach zu <span lang="ja">**ない**</span>.
 :::
+
+Alle Verneinungen – auch von Adjektiven und Nomen – im Überblick: [Verneinung](./verneinung).
 
 ### Die einfache Vergangenheit
 

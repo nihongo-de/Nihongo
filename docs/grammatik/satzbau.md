@@ -99,3 +99,5 @@ Fragewörter stehen dort, wo später die Antwort steht:
   <div class="info-card"><span class="info-card__big" lang="ja">どうして</span><span class="info-card__text">dōshite – warum</span></div>
   <div class="info-card"><span class="info-card__big" lang="ja">いくら</span><span class="info-card__text">ikura – wie viel (Preis)</span></div>
 </div>
+
+Alle Fragewörter, das Zeigesystem <span lang="ja">これ・それ・あれ・どれ</span> und Formen wie <span lang="ja">何か・何も</span> findest du unter [Fragewörter & こそあど](./fragewoerter).
