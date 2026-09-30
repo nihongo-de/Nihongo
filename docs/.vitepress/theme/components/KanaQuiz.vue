@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { kanaSets, kanaWords, toKatakana, type KanaSet } from '../data/kana'
-import { loadGlyph, rate as saveRating, ratingLabels, strokeCountHint, type Glyph, type Rating } from '../utils/strokes'
-import WritingPad from './WritingPad.vue'
+import { loadGlyph, loadRatings, rate as saveRating, ratings, type Glyph, type Rating } from '../utils/strokes'
+import WritingPractice from './WritingPractice.vue'
 import StrokeDialog from './StrokeDialog.vue'
 
 type Script = 'hiragana' | 'katakana'
-type SetId = KanaSet | 'words'
 interface Card {
   kana: string
   romaji: string
@@ -17,13 +16,12 @@ interface Card {
   hint?: string
 }
 
-const SETS: { id: SetId; label: string; sample: string }[] = [
-  { id: 'basic', label: 'Grundzeichen', sample: 'あ か さ' },
-  { id: 'dakuten', label: 'Dakuten & Handakuten', sample: 'が ぱ' },
-  { id: 'yoon', label: 'Yōon', sample: 'きゃ しゅ' },
-  { id: 'extended', label: 'Erweiterte Katakana', sample: 'ファ ティ' },
-  { id: 'words', label: 'Wörter mit っ, ー, ん', sample: 'きって' }
-]
+const SET_LABELS: Record<KanaSet, string> = {
+  basic: 'Grundzeichen',
+  dakuten: 'Dakuten & Handakuten',
+  yoon: 'Yōon',
+  extended: 'Erweiterte Katakana'
+}
 
 // Gängige alternative Umschriften (Kunrei-shiki / Tastatureingabe)
 const ALT: Record<string, string[]> = {
@@ -57,24 +55,65 @@ function makeCard(kana: string, romaji: string[], key = kana, extra: Pick<Card, 
   return { kana, romaji: romaji[0], accept: [...new Set(accept.map(normalize))], ...extra }
 }
 
-const scripts = reactive<Record<Script, boolean>>({ hiragana: true, katakana: true })
-const sets = reactive<Record<SetId, boolean>>({ basic: true, dakuten: true, yoon: true, extended: true, words: true })
+/* Auswahl einzelner Zeichen */
+interface PickItem {
+  kana: string
+  card: Card
+}
+const PICKER = (['hiragana', 'katakana'] as Script[]).map((script) => ({
+  id: script,
+  label: script === 'hiragana' ? 'Hiragana' : 'Katakana',
+  sample: script === 'hiragana' ? 'ひらがな' : 'カタカナ',
+  groups: (Object.keys(kanaSets) as KanaSet[])
+    .filter((id) => id !== 'extended' || script === 'katakana')
+    .map((id) => ({
+      id,
+      label: SET_LABELS[id],
+      rows: kanaSets[id].rows
+        .map((row) =>
+          row.flatMap((cell): PickItem[] => {
+            if (!cell) return []
+            const kana = script === 'katakana' ? toKatakana(cell[0]) : cell[0]
+            return [{ kana, card: makeCard(kana, [cell[1]], cell[0], { hint: HINT[cell[0]] }) }]
+          })
+        )
+        .filter((row) => row.length)
+    }))
+}))
+const scriptItems = (s: Script) => PICKER.find((p) => p.id === s)!.groups.flatMap((g) => g.rows.flat())
+const ALL_ITEMS = PICKER.flatMap((p) => scriptItems(p.id))
+
+const SELECTION_KEY = 'nihongo:kana-quiz'
+const selected = ref(new Set(ALL_ITEMS.map((i) => i.kana)))
+const words = reactive<Record<Script, boolean>>({ hiragana: true, katakana: true })
+const countIn = (items: PickItem[]) => items.filter((i) => selected.value.has(i.kana)).length
+const weak = computed(() => ALL_ITEMS.filter((i) => ratings.value[i.kana] === 'again' || ratings.value[i.kana] === 'almost'))
+
+function toggle(kana: string) {
+  const next = new Set(selected.value)
+  if (!next.delete(kana)) next.add(kana)
+  selected.value = next
+}
+
+function setMany(items: PickItem[], on: boolean) {
+  const next = new Set(selected.value)
+  items.forEach((i) => (on ? next.add(i.kana) : next.delete(i.kana)))
+  selected.value = next
+}
+
+// Ganze Reihe umschalten: sind alle an, gehen alle aus – sonst alle an
+const toggleRow = (row: PickItem[]) => setMany(row, countIn(row) < row.length)
+
+function selectOnly(items: PickItem[], withWords: Record<Script, boolean>) {
+  selected.value = new Set(items.map((i) => i.kana))
+  Object.assign(words, withWords)
+}
 
 function buildCards(): Card[] {
-  const out: Card[] = []
-  for (const script of ['hiragana', 'katakana'] as Script[]) {
-    if (!scripts[script]) continue
-    for (const id of Object.keys(kanaSets) as KanaSet[]) {
-      if (!sets[id] || (id === 'extended' && script === 'hiragana')) continue
-      for (const cell of kanaSets[id].rows.flat()) {
-        if (cell) {
-          const kana = script === 'katakana' ? toKatakana(cell[0]) : cell[0]
-          out.push(makeCard(kana, [cell[1]], cell[0], { hint: HINT[cell[0]] }))
-        }
-      }
-    }
-    if (sets.words && mode.value !== 'write') {
-      out.push(...kanaWords[script].map(({ kana, romaji, kanji, de }) => makeCard(kana, romaji, kana, { kanji, de })))
+  const out = ALL_ITEMS.filter((i) => selected.value.has(i.kana)).map((i) => i.card)
+  if (mode.value !== 'write') {
+    for (const script of ['hiragana', 'katakana'] as Script[]) {
+      if (words[script]) out.push(...kanaWords[script].map(({ kana, romaji, kanji, de }) => makeCard(kana, romaji, kana, { kanji, de })))
     }
   }
   return out
@@ -212,7 +251,20 @@ watch(phase, (p) => p !== 'run' && clearTimeout(timer))
 const resultLabel = computed(
   () => ({ type: 'auf Anhieb richtig', flash: 'auf Anhieb gewusst', write: 'sicher geschrieben' })[mode.value]
 )
-onMounted(() => window.addEventListener('keydown', onKey))
+onMounted(() => {
+  loadRatings()
+  try {
+    const saved = JSON.parse(localStorage.getItem(SELECTION_KEY) ?? 'null')
+    if (Array.isArray(saved?.chars)) selected.value = new Set(saved.chars.filter((k: string) => ALL_ITEMS.some((i) => i.kana === k)))
+    if (saved?.words) Object.assign(words, { hiragana: !!saved.words.hiragana, katakana: !!saved.words.katakana })
+  } catch {}
+  window.addEventListener('keydown', onKey)
+})
+watch([selected, words], () => {
+  try {
+    localStorage.setItem(SELECTION_KEY, JSON.stringify({ chars: [...selected.value], words }))
+  } catch {}
+})
 onBeforeUnmount(() => {
   clearTimeout(timer)
   window.removeEventListener('keydown', onKey)
@@ -223,18 +275,6 @@ onBeforeUnmount(() => {
   <div class="kquiz">
     <template v-if="phase === 'setup'">
       <fieldset class="kquiz__group">
-        <legend>Schrift</legend>
-        <label><input v-model="scripts.hiragana" type="checkbox" /> Hiragana <span lang="ja">あ</span></label>
-        <label><input v-model="scripts.katakana" type="checkbox" /> Katakana <span lang="ja">ア</span></label>
-      </fieldset>
-      <fieldset class="kquiz__group">
-        <legend>Zeichen</legend>
-        <label v-for="s in SETS" :key="s.id" :class="{ 'is-off': s.id === 'words' && mode === 'write' }">
-          <input v-model="sets[s.id]" type="checkbox" :disabled="s.id === 'words' && mode === 'write'" />
-          {{ s.label }} <span class="kquiz__sample" lang="ja">{{ s.sample }}</span>
-        </label>
-      </fieldset>
-      <fieldset class="kquiz__group">
         <legend>Modus</legend>
         <label><input v-model="mode" type="radio" value="type" /> Eintippen</label>
         <label><input v-model="mode" type="radio" value="flash" /> Flashcards (nur lesen)</label>
@@ -242,6 +282,63 @@ onBeforeUnmount(() => {
         <label v-if="mode === 'flash'" class="kquiz__seconds">
           <input v-model.number="seconds" type="number" min="0.5" max="60" step="0.5" /> Sekunden pro Karte
         </label>
+      </fieldset>
+      <fieldset class="kquiz__group is-block">
+        <legend>Zeichen auswählen <span class="kquiz__muted">· {{ selected.size }} ausgewählt</span></legend>
+        <div class="kquiz__quick">
+          <button type="button" @click="selectOnly(ALL_ITEMS, { hiragana: true, katakana: true })">Alle</button>
+          <button type="button" @click="selectOnly(scriptItems('hiragana'), { hiragana: true, katakana: false })">Nur Hiragana</button>
+          <button type="button" @click="selectOnly(scriptItems('katakana'), { hiragana: false, katakana: true })">Nur Katakana</button>
+          <button v-if="weak.length" type="button" @click="selectOnly(weak, { hiragana: false, katakana: false })">
+            Zum Üben markierte ({{ weak.length }})
+          </button>
+          <button type="button" @click="selectOnly([], { hiragana: false, katakana: false })">Keine</button>
+        </div>
+        <details v-for="p in PICKER" :key="p.id" class="kquiz__level">
+          <summary>
+            {{ p.label }} <span lang="ja">{{ p.sample }}</span>
+            <span class="kquiz__muted">{{ countIn(scriptItems(p.id)) }} / {{ scriptItems(p.id).length }}</span>
+          </summary>
+          <div v-for="g in p.groups" :key="g.id" class="kquiz__pick">
+            <label class="kquiz__pick-head">
+              <input
+                type="checkbox"
+                :checked="countIn(g.rows.flat()) === g.rows.flat().length"
+                :indeterminate="countIn(g.rows.flat()) > 0 && countIn(g.rows.flat()) < g.rows.flat().length"
+                @change="setMany(g.rows.flat(), ($event.target as HTMLInputElement).checked)"
+              />
+              {{ g.label }}
+            </label>
+            <div v-for="(row, ri) in g.rows" :key="ri" class="kquiz__chips">
+              <button
+                type="button"
+                class="kquiz__row-toggle"
+                :title="`Reihe ${row[0].card.romaji} umschalten`"
+                :aria-label="`Ganze Reihe ${row.map((i) => i.kana).join(' ')} umschalten`"
+                @click="toggleRow(row)"
+              >
+                {{ row[0].card.romaji }}
+              </button>
+              <button
+                v-for="i in row"
+                :key="i.kana"
+                type="button"
+                lang="ja"
+                :title="i.card.romaji"
+                :aria-label="`${i.kana} (${i.card.romaji})`"
+                :aria-pressed="selected.has(i.kana)"
+                @click="toggle(i.kana)"
+              >
+                {{ i.kana }}
+              </button>
+            </div>
+          </div>
+        </details>
+        <div class="kquiz__words" :class="{ 'is-off': mode === 'write' }">
+          <span>Wörter mit <span lang="ja">っ, ー, ん</span>:</span>
+          <label><input v-model="words.hiragana" type="checkbox" :disabled="mode === 'write'" /> Hiragana ({{ kanaWords.hiragana.length }})</label>
+          <label><input v-model="words.katakana" type="checkbox" :disabled="mode === 'write'" /> Katakana ({{ kanaWords.katakana.length }})</label>
+        </div>
       </fieldset>
       <div class="kquiz__actions">
         <button type="button" class="kquiz__btn is-primary" :disabled="!deckSize" @click="start(buildCards())">
@@ -266,48 +363,26 @@ onBeforeUnmount(() => {
         <span>{{ firstTry }} {{ resultLabel }}</span>
       </div>
       <template v-if="mode === 'write'">
-        <div class="kquiz__card">
+        <div class="kquiz__card is-write">
           <p class="kquiz__reveal">{{ current.romaji }}</p>
           <p class="kquiz__meaning">
             {{ isKatakana(current.kana) ? 'Katakana' : 'Hiragana' }}<template v-if="current.hint"> · {{ current.hint }}</template>
           </p>
-          <button
-            v-if="revealed"
-            type="button"
-            class="kquiz__kana is-link"
-            lang="ja"
-            title="Strichfolge ansehen"
-            @click="dialog = current"
-          >
-            {{ current.kana }}
-          </button>
         </div>
-        <div class="kquiz__write">
-          <p v-if="glyph === undefined" class="kquiz__note">Lade …</p>
-          <WritingPad
-            v-else-if="glyph"
-            v-model="strokes"
-            :glyph="glyph"
-            :revealed="revealed"
-            :label="`Schreibfeld für ${current.romaji}`"
-          />
-          <div v-if="!revealed" class="kquiz__form is-center">
-            <button type="button" class="kquiz__btn" :disabled="!strokes.length" @click="strokes = strokes.slice(0, -1)">↶ Rückgängig</button>
-            <button type="button" class="kquiz__btn" :disabled="!strokes.length" @click="strokes = []">Löschen</button>
-            <button type="button" class="kquiz__btn is-primary" @click="reveal">
-              {{ strokes.length ? 'Vergleichen' : 'Lösung zeigen' }}
+        <WritingPractice
+          v-model:strokes="strokes"
+          v-model:revealed="revealed"
+          :glyph="glyph"
+          :label="`Schreibfeld für ${current.romaji}`"
+          @rate="rateWriting"
+        >
+          <template #meta>
+            <button v-if="revealed" type="button" class="kquiz__solution-link" title="Strichfolge ansehen" @click="dialog = current">
+              <span lang="ja">{{ current.kana }}</span> Strichfolge
             </button>
-          </div>
-          <template v-else>
-            <p v-if="glyph && strokes.length" class="kquiz__note">{{ strokeCountHint(strokes.length, glyph.strokes.length) }}</p>
-            <p class="kquiz__rate-q">Wie gut hat es geklappt?</p>
-            <div class="kquiz__form is-center">
-              <button v-for="(l, r) in ratingLabels" :key="r" type="button" class="kquiz__btn" :class="`is-${r}`" @click="rateWriting(r)">
-                {{ l }}
-              </button>
-            </div>
+            <template v-else>Schreibe das {{ isKatakana(current.kana) ? 'Katakana' : 'Hiragana' }}.</template>
           </template>
-        </div>
+        </WritingPractice>
       </template>
       <div v-else class="kquiz__card" :class="{ 'is-wrong': wrong }">
         <span class="kquiz__kana" lang="ja">{{ current.kana }}</span>
@@ -413,7 +488,69 @@ onBeforeUnmount(() => {
 
 .kquiz__group label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 .kquiz__group input { accent-color: var(--vp-c-brand-1); width: 16px; height: 16px; }
-.kquiz__sample { color: var(--vp-c-text-3); }
+.kquiz__group.is-block { display: block; }
+.kquiz__muted { color: var(--vp-c-text-3); font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+.kquiz__quick { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-bottom: 8px; }
+.kquiz__quick button { font-size: 13px; font-weight: 600; color: var(--vp-c-brand-1); }
+.kquiz__quick button:hover { text-decoration: underline; }
+
+.kquiz__level {
+  margin-top: 8px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg);
+}
+
+.kquiz__level summary {
+  margin: 0;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kquiz__pick { padding: 6px 14px 10px; border-top: 1px solid var(--vp-c-divider); }
+.kquiz__pick-head { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+
+.kquiz__chips { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 4px; }
+
+.kquiz__chips button {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 4px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  font-size: 17px;
+  color: var(--vp-c-text-3);
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.kquiz__chips button:hover { border-color: var(--vp-c-brand-1); }
+
+.kquiz__chips button[aria-pressed='true'] {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-brand-soft);
+}
+
+.kquiz__chips .kquiz__row-toggle {
+  width: 40px;
+  border-style: dashed;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+}
+
+.kquiz__words {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.kquiz__words.is-off { opacity: 0.45; }
 
 .kquiz__actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 10px; }
 
@@ -548,27 +685,17 @@ onBeforeUnmount(() => {
 .kquiz__missed .kquiz__de { color: var(--vp-c-text-2); font-weight: 400; }
 .kquiz__missed .kquiz__de [lang='ja'] { font-size: 12px; }
 
-.kquiz__write {
-  display: flex;
-  flex-direction: column;
+.kquiz__card.is-write { min-height: 96px; }
+
+.kquiz__solution-link {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
-}
-
-.kquiz__form.is-center { justify-content: center; }
-.kquiz__group label.is-off { opacity: 0.45; cursor: default; }
-.kquiz__rate-q { font-weight: 600; }
-.kquiz__btn.is-again { border-color: var(--vp-c-danger-2); color: var(--vp-c-danger-1); }
-.kquiz__btn.is-almost { border-color: var(--vp-c-warning-2); color: var(--vp-c-warning-1); }
-.kquiz__btn.is-good { border-color: var(--vp-c-success-2); color: var(--vp-c-success-1); }
-
-.kquiz__kana.is-link {
+  gap: 6px;
+  font-weight: 600;
   color: var(--vp-c-brand-1);
-  text-decoration: underline dotted;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 8px;
 }
+
+.kquiz__solution-link [lang='ja'] { font-size: 22px; text-decoration: underline dotted; text-underline-offset: 4px; }
 
 @media print {
   .kquiz { display: none; }

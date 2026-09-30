@@ -6,11 +6,12 @@ Eine kleine, kostenlose Lernhilfe für Japanisch – auf Deutsch, ohne Werbung, 
 
 ## Inhalte
 
-- **Schrift** – Hiragana, Katakana, Kombinationen, Kanji-Grundlagen und die 80 N5-Kanji
+- **Start** – Japanisch auf einen Blick, Lerntipps, JLPT-Stufen im Vergleich zu A1–C2
+- **Schrift** – Hiragana, Katakana, Kombinationen, Kanji-Grundlagen und alle Kanji von N5 bis N1 mit Strichfolge
 - **Aussprache** – Laute, Moren und Tonhöhenakzent
 - **Grammatik** – Satzbau, Partikel (inkl. Direktvergleiche), Verben, Adjektive, Höflichkeit
 - **Wortschatz** – Zahlen, Zählwörter und Alltagsausdrücke
-- **Übungen** – Kana-Quiz, N5-Kanji lesen, Partikel-Übungen
+- **Übungen** – Kana-Quiz, N5-Kanji lesen, Kanji-Quiz (N5–N1), Partikel-Übungen, Schreibübungen, Druckvorlagen (Kana-/Kanji-Schreibblätter mit Strichfolge, Kanji-Vokabellisten)
 - **Drucken** – alle Seiten als Lernskript ausdrucken
 
 ## Als App installieren
@@ -32,6 +33,8 @@ npm install
 npm run dev       # Entwicklungsserver: http://localhost:5173/
 npm run build     # Produktions-Build nach docs/.vitepress/dist
 npm run preview   # Build lokal testen (inkl. Service Worker/Offline)
+npm run kanji     # N3–N1-Listen neu erzeugen (data/n{3,2,1}.json, deutsche Bedeutungen aus scripts/data/kanji-de.tsv)
+npm run strokes   # Strichdaten von KanjiVG laden – nach neuen Kanji/Kana erneut ausführen
 ```
 
 Der Service Worker ist nur im Build aktiv, nicht im Entwicklungsserver.
@@ -47,7 +50,7 @@ docs/
    ├─ config.mts            Navigation, Sidebar, PWA-Einstellungen
    └─ theme/
       ├─ components/        Vue-Komponenten (Quiz, Kana-Tabelle, Tonhöhe …)
-      ├─ data/              Lerndaten (Kana, N5-Kanji, Partikel)
+      ├─ data/              Lerndaten (Kana, Kanji N5–N1, Partikel, Strichdaten)
       ├─ utils/             Hilfsfunktionen (Ruby-Syntax, Druck)
       └─ custom.css
 ```

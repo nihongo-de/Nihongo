@@ -14,6 +14,11 @@ Sie machen Texte kompakt und lesbar – weil Japanisch viele gleichklingende Wö
   <div class="info-card"><span class="info-card__big">214</span><span class="info-card__label">Radikale</span><span class="info-card__text">Bausteine, aus denen sich Kanji zusammensetzen.</span></div>
 </div>
 
+::: info Kanji nach JLPT-Stufen
+Alle Kanji-Listen hier folgen den Stufen der japanischen Sprachprüfung JLPT – von [N5](./kanji-n5) (Einstieg, etwa A1) über [N4](./kanji-n4), [N3](./kanji-n3) und [N2](./kanji-n2)
+bis [N1](./kanji-n1) (etwa C1). Was die Stufen bedeuten und wie sie zu A1–C2 passen, steht unter [JLPT & GER](../start/jlpt).
+:::
+
 ## On- und Kun-Lesung
 
 Die meisten Kanji haben **mehrere Lesungen**:

@@ -6,7 +6,8 @@
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
     "preview": "vitepress preview docs",
-    "strokes": "node scripts/kanjivg.mjs"
+    "strokes": "node scripts/kanjivg.mjs",
+    "kanji": "node scripts/kanji-levels.mjs"
   },
   "dependencies": {
     "@fontsource/noto-sans-jp": "^5.3.0"

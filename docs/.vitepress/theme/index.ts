@@ -12,10 +12,12 @@ import PitchAccent from './components/PitchAccent.vue'
 import MoraSplit from './components/MoraSplit.vue'
 import KanjiCard from './components/KanjiCard.vue'
 import KanjiGrid from './components/KanjiGrid.vue'
+import StrokeText from './components/StrokeText.vue'
 import ReadingDrill from './components/ReadingDrill.vue'
 import ParticleQuiz from './components/ParticleQuiz.vue'
 import KanaQuiz from './components/KanaQuiz.vue'
 import KanjiQuiz from './components/KanjiQuiz.vue'
+import PrintSheets from './components/PrintSheets.vue'
 import PrintAllButton from './components/PrintAllButton.vue'
 import PrintDialog from './components/PrintDialog.vue'
 
@@ -46,9 +48,11 @@ export default {
     app.component('MoraSplit', MoraSplit)
     app.component('KanjiCard', KanjiCard)
     app.component('KanjiGrid', KanjiGrid)
+    app.component('StrokeText', StrokeText)
     app.component('ReadingDrill', ReadingDrill)
     app.component('ParticleQuiz', ParticleQuiz)
     app.component('KanaQuiz', KanaQuiz)
     app.component('KanjiQuiz', KanjiQuiz)
+    app.component('PrintSheets', PrintSheets)
   }
 } satisfies Theme

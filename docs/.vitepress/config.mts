@@ -38,7 +38,18 @@ export default withPwa(defineConfig({
     workbox: {
       // Fonts are excluded here and cached on first use instead (~10 MB of Noto Sans JP subsets)
       globPatterns: ['**/*.{js,css,html,svg,png,ico,txt}'],
+      // Kanji-Strichdaten (~2,3 MB) erst bei Bedarf laden und dann cachen
+      globIgnores: ['**/strokes-kanji-*.js'],
       runtimeCaching: [
+        {
+          urlPattern: /\/strokes-kanji-[0-9a-f]\.[\w-]+\.js$/,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'strokes',
+            expiration: { maxEntries: 32 },
+            cacheableResponse: { statuses: [0, 200] }
+          }
+        },
         {
           urlPattern: /\.woff2?$/,
           handler: 'CacheFirst',
@@ -69,7 +80,8 @@ export default withPwa(defineConfig({
         text: 'Start',
         items: [
           { text: 'Japanisch auf einen Blick', link: '/start/' },
-          { text: 'Die 12 wichtigsten Lerntipps', link: '/start/lerntipps' }
+          { text: 'Die 12 wichtigsten Lerntipps', link: '/start/lerntipps' },
+          { text: 'JLPT & GER-Niveaus', link: '/start/jlpt' }
         ]
       },
       {
@@ -79,8 +91,11 @@ export default withPwa(defineConfig({
           { text: 'Katakana カタカナ', link: '/schrift/katakana' },
           { text: 'Kana-Kombinationen', link: '/schrift/kombinationen' },
           { text: 'Kanji 漢字', link: '/schrift/kanji' },
-          { text: 'Die 80 N5-Kanji', link: '/schrift/kanji-n5' },
-          { text: 'Die N4-Kanji', link: '/schrift/kanji-n4' }
+          { text: 'N5 Kanji', link: '/schrift/kanji-n5' },
+          { text: 'N4 Kanji', link: '/schrift/kanji-n4' },
+          { text: 'N3 Kanji', link: '/schrift/kanji-n3' },
+          { text: 'N2 Kanji', link: '/schrift/kanji-n2' },
+          { text: 'N1 Kanji', link: '/schrift/kanji-n1' }
         ]
       },
       {
@@ -114,7 +129,8 @@ export default withPwa(defineConfig({
           { text: 'Kana-Quiz', link: '/uebungen/kana' },
           { text: 'N5-Kanji lesen', link: '/uebungen/kanji-n5' },
           { text: 'Kanji-Quiz', link: '/uebungen/kanji-quiz' },
-          { text: 'Partikel-Übungen', link: '/uebungen/partikel' }
+          { text: 'Partikel-Übungen', link: '/uebungen/partikel' },
+          { text: 'Druckvorlagen', link: '/uebungen/druckvorlagen' }
         ]
       }
     ],

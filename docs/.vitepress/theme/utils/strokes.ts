@@ -7,11 +7,13 @@ interface StrokeData {
 }
 
 type StrokeTable = Record<string, StrokeData>
-const tables: Partial<Record<'kanji' | 'kana', Promise<StrokeTable>>> = {}
-const loadTable = (name: 'kanji' | 'kana') =>
-  (tables[name] ??= (name === 'kana' ? import('../data/strokes-kana.json') : import('../data/strokes-kanji.json')).then(
-    (m) => m.default as unknown as StrokeTable
-  ))
+// Kanji sind nach Codepunkt auf mehrere Dateien verteilt (siehe scripts/kanjivg.mjs)
+const SHARDS = 16
+const files = import.meta.glob<StrokeTable>('../data/strokes-*.json', { import: 'default' })
+const tables: Record<string, Promise<StrokeTable>> = {}
+const tableOf = (c: string) => (/[\u3040-\u30ff]/.test(c) ? 'kana' : `kanji-${(c.codePointAt(0)! % SHARDS).toString(16)}`)
+const loadTable = (name: string) =>
+  (tables[name] ??= files[`../data/strokes-${name}.json`]?.() ?? Promise.resolve({}))
 
 export const CELL = 109
 
@@ -24,17 +26,13 @@ export interface Glyph {
 
 export async function loadGlyph(text: string): Promise<Glyph | null> {
   const chars = [...text]
-  const needKana = chars.some((c) => /[\u3040-\u30ff]/.test(c))
-  const needKanji = chars.some((c) => !/[\u3040-\u30ff]/.test(c))
-  const none: StrokeTable = {}
-  const [kana, kanji] = await Promise.all([needKana ? loadTable('kana') : none, needKanji ? loadTable('kanji') : none])
+  const data = await Promise.all(chars.map((c) => loadTable(tableOf(c)).then((t) => t[c])))
   const glyph: Glyph = { width: chars.length * CELL, strokes: [], nums: [] }
-  for (const [i, c] of chars.entries()) {
-    const data = kana[c] ?? kanji[c]
-    if (!data) return null
+  for (const [i, d] of data.entries()) {
+    if (!d) return null
     const x = i * CELL
-    data.s.forEach((d) => glyph.strokes.push({ d, x }))
-    data.n.forEach(([nx, ny]) => glyph.nums.push([nx + x, ny]))
+    d.s.forEach((s) => glyph.strokes.push({ d: s, x }))
+    d.n.forEach(([nx, ny]) => glyph.nums.push([nx + x, ny]))
   }
   return glyph
 }
@@ -48,11 +46,6 @@ export function gridPaths(width: number) {
     guides += `M${x + CELL / 2} 0V${CELL}`
   }
   return { frame, guides }
-}
-
-export function strokeCountHint(drawn: number, expected: number) {
-  if (drawn === expected) return `Du hast ${drawn} von ${expected} Strichen gezeichnet – die Anzahl stimmt.`
-  return `Du hast ${drawn} Strich${drawn === 1 ? '' : 'e'} gezeichnet, richtig sind ${expected}. Vergleiche mit der Vorlage.`
 }
 
 export type Rating = 'again' | 'almost' | 'good'

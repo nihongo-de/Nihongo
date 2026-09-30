@@ -1,17 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import WritingPad from './WritingPad.vue'
-import {
-  CELL,
-  gridPaths,
-  loadGlyph,
-  rate,
-  ratingLabels,
-  ratings,
-  strokeCountHint,
-  type Glyph,
-  type Rating
-} from '../utils/strokes'
+import WritingPractice from './WritingPractice.vue'
+import { CELL, gridPaths, loadGlyph, rate, ratingLabels, ratings, type Glyph, type Rating } from '../utils/strokes'
 
 const props = defineProps<{ text: string; label: string }>()
 const emit = defineEmits<{ close: [] }>()
@@ -89,15 +79,12 @@ const showGuide = ref(true)
 const revealed = ref(false)
 const rated = ref<Rating | null>(null)
 
-function resetPad() {
-  userStrokes.value = []
-  revealed.value = false
-  rated.value = null
-}
-
+// Nach der Bewertung beginnt sofort ein neuer Versuch
 function selfRate(r: Rating) {
   rate(props.text, r)
   rated.value = r
+  userStrokes.value = []
+  revealed.value = false
 }
 
 const lastRating = computed(() => ratings.value[props.text])
@@ -247,42 +234,30 @@ onBeforeUnmount(() => {
 
           <!-- Schreiben -->
           <section v-show="tab === 'write'" class="ks__section">
-            <p class="ks__hint">
-              {{ revealed ? 'Rot: Vorlage mit Strichnummern · Blau: deine Reihenfolge' : 'Zeichne das Zeichen mit Finger, Stift oder Maus nach.' }}
-            </p>
-            <WritingPad v-model="userStrokes" :glyph="glyph" :guide="showGuide" :revealed="revealed" :label="`Schreibfeld für ${text}`" />
-
-            <template v-if="!revealed">
-              <label class="ks__check"><input v-model="showGuide" type="checkbox" /> Vorlage einblenden</label>
-              <div class="ks__controls">
-                <button type="button" :disabled="!userStrokes.length" @click="userStrokes = userStrokes.slice(0, -1)">↶ Rückgängig</button>
-                <button type="button" :disabled="!userStrokes.length" @click="resetPad">Löschen</button>
-                <button type="button" class="is-primary" :disabled="!userStrokes.length" @click="revealed = true">
-                  Fertig – vergleichen
-                </button>
-              </div>
-            </template>
-
-            <div v-else class="ks__rate">
-              <p :class="{ 'is-off': userStrokes.length !== count }">{{ strokeCountHint(userStrokes.length, count) }}</p>
-              <template v-if="!rated">
-                <p class="ks__rate-q">Wie gut hat es geklappt?</p>
-                <div class="ks__rate-btns">
-                  <button v-for="(l, r) in ratingLabels" :key="r" type="button" :class="`is-${r}`" @click="selfRate(r)">
-                    {{ l }}
-                  </button>
-                </div>
+            <WritingPractice
+              v-model:strokes="userStrokes"
+              v-model:revealed="revealed"
+              :glyph="glyph"
+              :guide="showGuide"
+              :label="`Schreibfeld für ${text}`"
+              @rate="selfRate"
+            >
+              <template #meta>
+                <template v-if="revealed">Wie gut hat es geklappt?</template>
+                <template v-else-if="rated && !userStrokes.length">
+                  Gespeichert: <span :class="`ks__badge is-${rated}`">{{ ratingLabels[rated] }}</span>
+                </template>
+                <template v-else>Zeichne mit Finger, Stift oder Maus.</template>
               </template>
-              <p v-else class="ks__saved">
-                Gespeichert: <span :class="`ks__badge is-${rated}`">{{ ratingLabels[rated] }}</span>
-              </p>
-              <div class="ks__controls">
-                <button type="button" :class="{ 'is-primary': rated }" @click="resetPad">Nochmal schreiben</button>
-              </div>
+            </WritingPractice>
+            <div class="ks__foot-row">
+              <label class="ks__check" :class="{ 'is-off': revealed }">
+                <input v-model="showGuide" type="checkbox" :disabled="revealed" /> Vorlage einblenden
+              </label>
+              <span v-if="lastRating && !rated" class="ks__last">
+                Zuletzt: <span :class="`ks__badge is-${lastRating}`">{{ ratingLabels[lastRating] }}</span>
+              </span>
             </div>
-            <p v-if="lastRating && !rated" class="ks__last">
-              Letzte Selbstbewertung: <span :class="`ks__badge is-${lastRating}`">{{ ratingLabels[lastRating] }}</span>
-            </p>
           </section>
         </div>
 
@@ -300,9 +275,10 @@ onBeforeUnmount(() => {
   inset: 0;
   z-index: 200;
   display: flex;
-  align-items: center;
+  /* Oben verankert: Wechsel zwischen den Reitern verschiebt Kopf und Reiter nicht */
+  align-items: flex-start;
   justify-content: center;
-  padding: 12px;
+  padding: max(12px, 4vh) 12px 12px;
   background: rgba(0, 0, 0, 0.45);
 }
 
@@ -415,8 +391,7 @@ onBeforeUnmount(() => {
   gap: 6px;
 }
 
-.ks__controls button,
-.ks__rate-btns button {
+.ks__controls button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -453,6 +428,7 @@ onBeforeUnmount(() => {
 }
 
 .ks__check input { accent-color: var(--vp-c-brand-1); }
+.ks__check.is-off { opacity: 0.45; cursor: default; }
 
 .ks__steps {
   display: flex;
@@ -481,25 +457,15 @@ onBeforeUnmount(() => {
 .ks__steps svg > path:not(.ks__guides) { stroke: var(--vp-c-text-2); stroke-width: 5; }
 .ks__steps svg > path.is-new { stroke: var(--vp-c-brand-1); }
 
-.ks__hint { margin: 0; font-size: 14px; text-align: center; color: var(--vp-c-text-2); }
-
-.ks__rate {
+.ks__foot-row {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  text-align: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+  min-height: 24px;
 }
-
-.ks__rate p { margin: 0; font-size: 14px; }
-.ks__rate p.is-off { color: var(--vp-c-warning-1); }
-.ks__rate-q { font-weight: 600; }
-
-.ks__rate-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
-.ks__rate-btns button.is-again { border-color: var(--vp-c-danger-2); color: var(--vp-c-danger-1); }
-.ks__rate-btns button.is-almost { border-color: var(--vp-c-warning-2); color: var(--vp-c-warning-1); }
-.ks__rate-btns button.is-good { border-color: var(--vp-c-success-2); color: var(--vp-c-success-1); }
-.ks__rate-btns button:hover { background: var(--vp-c-default-soft); }
 
 .ks__badge {
   padding: 1px 8px;
@@ -512,7 +478,7 @@ onBeforeUnmount(() => {
 .ks__badge.is-almost { color: var(--vp-c-warning-1); background: var(--vp-c-warning-soft); }
 .ks__badge.is-good { color: var(--vp-c-success-1); background: var(--vp-c-success-soft); }
 
-.ks__last { margin: 0; font-size: 13px; color: var(--vp-c-text-2); }
+.ks__last { font-size: 13px; color: var(--vp-c-text-2); white-space: nowrap; }
 
 .ks__foot {
   margin-top: auto;

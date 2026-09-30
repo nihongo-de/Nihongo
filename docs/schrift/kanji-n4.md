@@ -1,11 +1,11 @@
 ---
-title: Die N4-Kanji
+title: N4 Kanji
 description: Die 167 Kanji der JLPT-Stufe N4 mit On- und Kun-Lesung, Bedeutung und Beispielwort – thematisch sortiert.
 ---
 
-# Die N4-Kanji
+# N4 Kanji
 
-Mit diesen 167 Kanji kommst du zusammen mit den [80 N5-Kanji](./kanji-n5) auf rund 250 Zeichen – den Grundstock für **JLPT N4**.
+Mit diesen 167 Kanji kommst du zusammen mit den [80 N5 Kanji](./kanji-n5) auf rund 250 Zeichen – den Grundstock für **JLPT N4** (etwa Niveau **A2**, siehe [JLPT & GER](../start/jlpt)).
 Wie bei N5 gibt es keine offizielle Liste; diese hier folgt den gängigen Lernlisten und enthält keine Zeichen, die schon bei N5 vorkommen.
 
 <div class="info-grid">
@@ -84,5 +84,5 @@ Tippe auf ein Kanji, um die **Strichfolge** als Animation zu sehen und das Zeich
 <KanjiGrid level="n4" group="begriffe" />
 
 ::: info Weiter üben
-Im [Kanji-Quiz](../uebungen/kanji-quiz) kannst du die N4-Kanji per Multiple Choice, Schreibübung oder Flashcards abfragen.
+Im [Kanji-Quiz](../uebungen/kanji-quiz) kannst du die N4-Kanji per Multiple Choice, Schreibübung oder Flashcards abfragen. Weiter geht es mit den [N3 Kanji](./kanji-n3).
 :::

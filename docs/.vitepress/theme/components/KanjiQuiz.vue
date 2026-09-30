@@ -1,55 +1,38 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { n5Groups, type N5Kanji } from '../data/n5'
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { levelLabels, loadLevel, type Kanji, type Level } from '../data/levels'
+import { n5Groups } from '../data/n5'
 import { n4Groups } from '../data/n4'
 import RubyText from './RubyText.vue'
-import WritingPad from './WritingPad.vue'
+import WritingPractice from './WritingPractice.vue'
 import StrokeDialog from './StrokeDialog.vue'
-import {
-  loadGlyph,
-  loadRatings,
-  rate,
-  ratingLabels,
-  ratings,
-  strokeCountHint,
-  type Glyph,
-  type Rating
-} from '../utils/strokes'
+import KanjiPicker from './KanjiPicker.vue'
+import { loadGlyph, loadRatings, rate, ratings, type Glyph, type Rating } from '../utils/strokes'
 
-type Level = 'n5' | 'n4'
 type Mode = 'choice' | 'write' | 'flash'
-interface Item extends N5Kanji {
+interface Item extends Kanji {
   level: Level
 }
+interface LevelEntry {
+  id: Level
+  label: string
+  groups: { id: string; title: string; kanji: Item[] }[]
+}
 
-const LEVELS = [
-  { id: 'n5' as const, label: 'N5', groups: n5Groups },
-  { id: 'n4' as const, label: 'N4', groups: n4Groups }
-].map(({ id, label, groups }) => ({
+const toLevel = (id: Level, groups: { id: string; title: string; kanji: Kanji[] }[]): LevelEntry => ({
   id,
-  label,
+  label: levelLabels[id],
   groups: groups.map((g) => ({ id: g.id, title: g.title, kanji: g.kanji.map((k): Item => ({ ...k, level: id })) }))
-}))
-const levelItems = (id: Level) => LEVELS.find((l) => l.id === id)!.groups.flatMap((g) => g.kanji)
-const ALL_ITEMS = LEVELS.flatMap((l) => l.groups.flatMap((g) => g.kanji))
+})
+// N3–N1 kommen nach dem Laden dazu
+const LEVELS = shallowRef<LevelEntry[]>([toLevel('n5', n5Groups), toLevel('n4', n4Groups)])
+const levelItems = (id: Level) => LEVELS.value.find((l) => l.id === id)?.groups.flatMap((g) => g.kanji) ?? []
+const ALL_ITEMS = computed(() => LEVELS.value.flatMap((l) => l.groups.flatMap((g) => g.kanji)))
 
 const SELECTION_KEY = 'nihongo:kanji-quiz'
 const selected = ref(new Set(levelItems('n5').map((i) => i.k)))
-const selectedItems = computed(() => ALL_ITEMS.filter((i) => selected.value.has(i.k)))
-const weak = computed(() => ALL_ITEMS.filter((i) => ratings.value[i.k] === 'again' || ratings.value[i.k] === 'almost'))
-const countIn = (items: Item[]) => items.filter((i) => selected.value.has(i.k)).length
-
-function toggle(k: string) {
-  const next = new Set(selected.value)
-  if (!next.delete(k)) next.add(k)
-  selected.value = next
-}
-
-function setMany(items: Item[], on: boolean) {
-  const next = new Set(selected.value)
-  items.forEach((i) => (on ? next.add(i.k) : next.delete(i.k)))
-  selected.value = next
-}
+const selectedItems = computed(() => ALL_ITEMS.value.filter((i) => selected.value.has(i.k)))
+const weak = computed(() => ALL_ITEMS.value.filter((i) => ratings.value[i.k] === 'again' || ratings.value[i.k] === 'almost'))
 
 const mode = ref<Mode>('choice')
 const ask = ref<'meaning' | 'reading'>('meaning')
@@ -88,7 +71,7 @@ function makeOptions(item: Item) {
   const fits = (o: Item) =>
     o.k !== item.k && (ask.value === 'meaning' ? o.de !== item.de : !readings(o).some((r) => own.has(r)))
   // Zuerst aus der eigenen Auswahl, dann aus derselben Stufe, dann aus allen
-  const tiers = [selectedItems.value, levelItems(item.level), ALL_ITEMS].map((list) => shuffle(list.filter(fits)))
+  const tiers = [selectedItems.value, levelItems(item.level), ALL_ITEMS.value].map((list) => shuffle(list.filter(fits)))
   const others = [...new Set(tiers.flat())].slice(0, 7)
   options.value = shuffle([item, ...others])
 }
@@ -210,13 +193,16 @@ watch(selected, (s) => {
     localStorage.setItem(SELECTION_KEY, JSON.stringify([...s]))
   } catch {}
 })
-onMounted(() => {
+onMounted(async () => {
   loadRatings()
+  window.addEventListener('keydown', onKey)
+  const extra = await Promise.all((['n3', 'n2', 'n1'] as const).map(async (id) => toLevel(id, await loadLevel(id))))
+  LEVELS.value = [...LEVELS.value, ...extra]
   try {
     const saved = JSON.parse(localStorage.getItem(SELECTION_KEY) ?? 'null')
-    if (Array.isArray(saved)) selected.value = new Set(saved.filter((k) => ALL_ITEMS.some((i) => i.k === k)))
+    const known = new Set(ALL_ITEMS.value.map((i) => i.k))
+    if (Array.isArray(saved)) selected.value = new Set(saved.filter((k) => known.has(k)))
   } catch {}
-  window.addEventListener('keydown', onKey)
 })
 onBeforeUnmount(() => {
   clearTimeout(timer)
@@ -247,43 +233,7 @@ onBeforeUnmount(() => {
       </fieldset>
       <fieldset class="kq__group is-block">
         <legend>Kanji auswählen <span class="kq__muted">· {{ selected.size }} ausgewählt</span></legend>
-        <div class="kq__quick">
-          <button v-for="l in LEVELS" :key="l.id" type="button" @click="setMany(levelItems(l.id), true)">Alle {{ l.label }}</button>
-          <button v-if="weak.length" type="button" @click="selected = new Set(weak.map((i) => i.k))">
-            Zum Üben markierte ({{ weak.length }})
-          </button>
-          <button type="button" @click="selected = new Set()">Keine</button>
-        </div>
-        <details v-for="l in LEVELS" :key="l.id" class="kq__level" :open="l.id === 'n5'">
-          <summary>
-            {{ l.label }}-Kanji <span class="kq__muted">{{ countIn(levelItems(l.id)) }} / {{ levelItems(l.id).length }}</span>
-          </summary>
-          <div v-for="g in l.groups" :key="g.id" class="kq__pick">
-            <label class="kq__pick-head">
-              <input
-                type="checkbox"
-                :checked="countIn(g.kanji) === g.kanji.length"
-                :indeterminate="countIn(g.kanji) > 0 && countIn(g.kanji) < g.kanji.length"
-                @change="setMany(g.kanji, ($event.target as HTMLInputElement).checked)"
-              />
-              {{ g.title }}
-            </label>
-            <div class="kq__chips">
-              <button
-                v-for="c in g.kanji"
-                :key="c.k"
-                type="button"
-                lang="ja"
-                :title="c.de"
-                :aria-label="`${c.k} (${c.de})`"
-                :aria-pressed="selected.has(c.k)"
-                @click="toggle(c.k)"
-              >
-                {{ c.k }}
-              </button>
-            </div>
-          </div>
-        </details>
+        <KanjiPicker v-model="selected" :levels="LEVELS" :weak="weak" />
       </fieldset>
       <div class="kq__actions">
         <button type="button" class="kq__btn is-primary" :disabled="!selected.size" @click="start(selectedItems)">
@@ -349,45 +299,30 @@ onBeforeUnmount(() => {
 
       <!-- Schreiben -->
       <template v-else-if="mode === 'write'">
-        <div class="kq__card">
+        <div class="kq__card is-write">
           <p class="kq__prompt">{{ current.de }}</p>
-          <dl v-if="showReadings || revealed" class="kq__readings is-small" lang="ja">
-            <template v-if="current.on !== '–'"><dt>音</dt><dd>{{ current.on }}</dd></template>
-            <template v-if="current.kun !== '–'"><dt>訓</dt><dd>{{ current.kun }}</dd></template>
-          </dl>
-          <button v-else type="button" class="kq__link" @click="showReadings = true">Lesungen als Hinweis zeigen</button>
+          <div class="kq__hint-slot">
+            <dl v-if="showReadings || revealed" class="kq__readings is-small" lang="ja">
+              <template v-if="current.on !== '–'"><dt>音</dt><dd>{{ current.on }}</dd></template>
+              <template v-if="current.kun !== '–'"><dt>訓</dt><dd>{{ current.kun }}</dd></template>
+            </dl>
+            <button v-else type="button" class="kq__link" @click="showReadings = true">Lesungen als Hinweis zeigen</button>
+          </div>
         </div>
-        <div class="kq__write">
-          <p v-if="glyph === undefined" class="kq__note">Lade …</p>
-          <WritingPad
-            v-else-if="glyph"
-            v-model="strokes"
-            :glyph="glyph"
-            :revealed="revealed"
-            :label="`Schreibfeld für ${current.de}`"
-          />
-          <template v-if="!revealed">
-            <div class="kq__actions is-center">
-              <button type="button" class="kq__btn" :disabled="!strokes.length" @click="strokes = strokes.slice(0, -1)">↶ Rückgängig</button>
-              <button type="button" class="kq__btn" :disabled="!strokes.length" @click="strokes = []">Löschen</button>
-              <button type="button" class="kq__btn is-primary" @click="revealed = true">
-                {{ strokes.length ? 'Vergleichen' : 'Lösung zeigen' }}
-              </button>
-            </div>
+        <WritingPractice
+          v-model:strokes="strokes"
+          v-model:revealed="revealed"
+          :glyph="glyph"
+          :label="`Schreibfeld für ${current.de}`"
+          @rate="rateWriting"
+        >
+          <template #meta>
+            <button v-if="revealed" type="button" class="kq__solution-link" title="Strichfolge ansehen" @click="dialog = current">
+              <span lang="ja">{{ current.k }}</span> Strichfolge
+            </button>
+            <template v-else>Schreibe das Kanji.</template>
           </template>
-          <template v-else>
-            <p class="kq__note is-center">
-              <button type="button" class="kq__kanji-link" lang="ja" title="Strichfolge ansehen" @click="dialog = current">{{ current.k }}</button>
-              <template v-if="glyph && strokes.length">{{ strokeCountHint(strokes.length, glyph.strokes.length) }}</template>
-            </p>
-            <p class="kq__rate-q">Wie gut hat es geklappt?</p>
-            <div class="kq__actions is-center">
-              <button v-for="(l, r) in ratingLabels" :key="r" type="button" class="kq__btn" :class="`is-${r}`" @click="rateWriting(r)">
-                {{ l }}
-              </button>
-            </div>
-          </template>
-        </div>
+        </WritingPractice>
       </template>
 
       <!-- Flashcards -->
@@ -409,7 +344,7 @@ onBeforeUnmount(() => {
               <template v-if="current.on !== '–'"><dt>音</dt><dd>{{ current.on }}</dd></template>
               <template v-if="current.kun !== '–'"><dt>訓</dt><dd>{{ current.kun }}</dd></template>
             </dl>
-            <p class="kq__example"><span lang="ja"><RubyText :text="current.ex" /></span> {{ current.exDe }}</p>
+            <p v-if="current.ex" class="kq__example"><span lang="ja"><RubyText :text="current.ex" /></span> {{ current.exDe }}</p>
           </template>
           <span v-else :key="pos" class="kq__timer" :style="{ '--t': `${delay}s` }" />
         </div>
@@ -488,47 +423,6 @@ onBeforeUnmount(() => {
 
 .kq__group.is-block { display: block; }
 
-.kq__quick { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-bottom: 8px; }
-.kq__quick button { font-size: 13px; font-weight: 600; color: var(--vp-c-brand-1); }
-.kq__quick button:hover { text-decoration: underline; }
-
-.kq__level {
-  margin-top: 8px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 12px;
-  background: var(--vp-c-bg);
-}
-
-.kq__level summary {
-  margin: 0;
-  padding: 8px 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.kq__pick { padding: 6px 14px 10px; border-top: 1px solid var(--vp-c-divider); }
-.kq__pick-head { font-size: 14px; font-weight: 600; }
-
-.kq__chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-
-.kq__chips button {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  font-size: 18px;
-  color: var(--vp-c-text-3);
-  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
-}
-
-.kq__chips button:hover { border-color: var(--vp-c-brand-1); }
-
-.kq__chips button[aria-pressed='true'] {
-  border-color: var(--vp-c-brand-1);
-  color: var(--vp-c-text-1);
-  background: var(--vp-c-brand-soft);
-}
-
 .kq__number input[type='number'] {
   width: 64px;
   height: auto;
@@ -556,9 +450,6 @@ onBeforeUnmount(() => {
 .kq__btn.is-primary { border-color: transparent; color: #fff; background: var(--vp-c-brand-1); }
 .kq__btn.is-primary:hover { filter: brightness(1.1); }
 .kq__btn:disabled { opacity: 0.4; cursor: default; }
-.kq__btn.is-again { border-color: var(--vp-c-danger-2); color: var(--vp-c-danger-1); }
-.kq__btn.is-almost { border-color: var(--vp-c-warning-2); color: var(--vp-c-warning-1); }
-.kq__btn.is-good { border-color: var(--vp-c-success-2); color: var(--vp-c-success-1); }
 
 .kq__note { font-size: 14px; color: var(--vp-c-text-2); }
 .kq__note.is-center { text-align: center; }
@@ -665,14 +556,25 @@ onBeforeUnmount(() => {
   text-underline-offset: 4px;
 }
 
-.kq__write {
+.kq__card.is-write { min-height: 156px; }
+
+/* Platz für zwei Lesungszeilen, damit das Einblenden nichts verschiebt */
+.kq__hint-slot {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  min-height: 52px;
 }
 
-.kq__rate-q { font-weight: 600; text-align: center; }
+.kq__solution-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+}
+
+.kq__solution-link [lang='ja'] { font-size: 22px; text-decoration: underline dotted; text-underline-offset: 4px; }
 
 .kq__big {
   font-size: clamp(56px, 12vw, 84px);

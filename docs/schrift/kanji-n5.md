@@ -1,11 +1,11 @@
 ---
-title: Die 80 N5-Kanji
+title: N5 Kanji
 description: Alle 80 Kanji der JLPT-Stufe N5 mit On- und Kun-Lesung, Bedeutung und Beispielwort – thematisch sortiert.
 ---
 
-# Die 80 N5-Kanji
+# N5 Kanji
 
-Diese 80 Kanji bilden den Grundstock für die Einstiegsprüfung **JLPT N5**. Seit 2010 gibt es keine offizielle Liste mehr –
+Diese 80 Kanji bilden den Grundstock für die Einstiegsprüfung **JLPT N5** (etwa Niveau **A1**, siehe [JLPT & GER](../start/jlpt)). Seit 2010 gibt es keine offizielle Liste mehr –
 die hier gezeigte deckt sich mit den gängigen Lernlisten. Jede Karte zeigt die wichtigsten Lesungen und ein Beispielwort mit [Furigana](./kanji#furigana).
 
 <div class="info-grid">
@@ -60,5 +60,5 @@ Tippe auf ein Kanji, um die **Strichfolge** als Animation zu sehen und das Zeich
 
 ::: info Weiter üben
 Zu jeder Gruppe gibt es [Lesesätze mit Furigana](../uebungen/kanji-n5) – dort kannst du die Lesehilfe ausblenden und dich selbst testen.
-Im [Kanji-Quiz](../uebungen/kanji-quiz) fragst du die Kanji per Multiple Choice, Schreibübung oder Flashcards ab. Weiter geht es mit den [N4-Kanji](./kanji-n4).
+Im [Kanji-Quiz](../uebungen/kanji-quiz) fragst du die Kanji per Multiple Choice, Schreibübung oder Flashcards ab. Weiter geht es mit den [N4 Kanji](./kanji-n4).
 :::
