@@ -38,7 +38,8 @@ Im Normalfall schreibst du <span lang="ja">じ</span> und <span lang="ja">ず</s
 ## Yōon – verschmolzene Silben {#yoon}
 
 Ein Zeichen der **i-Spalte** (<span lang="ja">き、し、ち …</span>) plus ein **kleines** <span lang="ja">ゃ ゅ ょ</span> ergibt **eine** Silbe.
-Das kleine Zeichen ist etwa halb so groß und sitzt unten links.
+Das kleine Zeichen ist etwa halb so groß und steht waagerecht geschrieben rechts unten neben dem vorigen Zeichen
+(in seinem eigenen Kästchen also links unten, dicht am Vorgänger); senkrecht geschrieben sitzt es oben rechts.
 
 <KanaChart script="hiragana" set="yoon" />
 

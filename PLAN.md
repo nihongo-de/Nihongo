@@ -7,6 +7,15 @@ Legende: `[ ]` offen · `[~]` teilweise vorhanden · `[x]` erledigt
 
 ---
 
+## Bugs (zu fixen am 01.10.2026)
+
+- [ ] **Audio-Qualität**: Die Sprachausgabe (`speak()` in `utils/settings.ts`) klingt sehr robotisch und muss deutlich besser werden (bessere Stimmen bevorzugen/auswählen, Tempo/Tonhöhe prüfen, ggf. Alternative zur Web Speech API wie vorab erzeugte Audiodateien)
+- [ ] **Falsche Kana-Aussprache**: Bei den Hiragana な・に・ぬ・ね・の werden „la li lu le lo“ ausgegeben statt „na ni nu ne no“
+- [ ] **Alle Kana-Audios überprüfen**: Hiragana und Katakana (inkl. Dakuten, Kombinationen wie きゃ, Sonderzeichen ん/っ/ー) einzeln durchhören und fehlerhafte Aussprachen korrigieren
+- [ ] **PWA-Updates sichtbar machen**: Neue Inhalte erscheinen derzeit erst beim übernächsten Öffnen, ohne Hinweis; die App auf dem Startbildschirm prüft beim Fortsetzen aus dem Hintergrund gar nicht. Lösung: `registerType: 'prompt'` + Banner „Neue Inhalte verfügbar – Neu laden“ (`useRegisterSW` aus `virtual:pwa-register/vue`), zusätzlich periodische Update-Prüfung (z. B. stündlich und bei `visibilitychange`)
+
+---
+
 ## Phase 0 – Grundgerüst
 
 - [x] Navigationsleiste: Rubriken (Start, Schrift, Aussprache, Grammatik, Wortschatz, Übungen) als ausklappbare Dropdowns mit allen Unterseiten
