@@ -101,3 +101,5 @@ Fragewörter stehen dort, wo später die Antwort steht:
 </div>
 
 Alle Fragewörter, das Zeigesystem <span lang="ja">これ・それ・あれ・どれ</span> und Formen wie <span lang="ja">何か・何も</span> findest du unter [Fragewörter & こそあど](./fragewoerter).
+
+Üben kannst du die Satzstellung im [Satzbau-Puzzle](../uebungen/satzbau).

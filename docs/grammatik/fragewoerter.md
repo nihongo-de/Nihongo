@@ -174,3 +174,5 @@ Mit <span lang="ja">か</span> ist es eine Ja/Nein-Frage, mit dem nackten Fragew
 7. <span lang="ja">「何人ですか。」「ドイツ人です。」</span> – Lesung von 何人? → **なにじん**
 8. <span lang="ja">（　）でもいいです。</span> – „Egal welches (von diesen)“ → **どれ**
 :::
+
+Weiter üben kannst du in den [Lückentexten](../uebungen/lueckentexte#fragewoerter).

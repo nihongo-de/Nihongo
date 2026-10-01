@@ -27,6 +27,8 @@ import LearnDashboard from './components/LearnDashboard.vue'
 import VocabList from './components/VocabList.vue'
 import DisplaySettings from './components/DisplaySettings.vue'
 import FormTrainer from './components/FormTrainer.vue'
+import SentencePuzzle from './components/SentencePuzzle.vue'
+import Flashcards from './components/Flashcards.vue'
 import ReloadPrompt from './components/ReloadPrompt.vue'
 
 // Zugeklappte Details-Blöcke beim Drucken aufklappen und danach wieder schließen
@@ -67,5 +69,7 @@ export default {
     app.component('LearnDashboard', LearnDashboard)
     app.component('VocabList', VocabList)
     app.component('FormTrainer', FormTrainer)
+    app.component('SentencePuzzle', SentencePuzzle)
+    app.component('Flashcards', Flashcards)
   }
 } satisfies Theme

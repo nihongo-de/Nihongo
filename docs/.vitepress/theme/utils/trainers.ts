@@ -1,5 +1,6 @@
 import { verbsN5, type Verb } from '../data/verbs'
 import { adjectivesN5, type Adjective } from '../data/adjectives'
+import { countersN5, timeWords, type NumberWord } from '../data/counters'
 import { conjugate, done, formHints, formLabels, type Conjugated, type VerbForm } from './conjugate'
 
 export interface TrainerItem {
@@ -19,7 +20,12 @@ export interface Deck {
   items: TrainerItem[]
   /** Was auf der Karte steht (Ruby-Syntax) */
   prompt(item: TrainerItem, form: string): string
-  answer(item: TrainerItem, form: string): Conjugated
+  /** null = Kombination gibt es nicht */
+  answer(item: TrainerItem, form: string): Conjugated | null
+  /** Untertitel der Karte (sonst item.de) */
+  describe?(item: TrainerItem, form: string): string
+  /** Gefragt ist die Lesung der Karte in Kana */
+  reading?: boolean
 }
 
 const VERB_FORMS: VerbForm[] = ['masu', 'masen', 'mashita', 'masendeshita', 'dict', 'nai', 'ta', 'te']
@@ -102,4 +108,65 @@ export const adjDeck: Deck = {
   answer: (item, form) => conjugateAdj(item as Adjective, form as AdjForm)
 }
 
-export const decks: Record<string, Deck> = { verben: verbDeck, adjektive: adjDeck }
+/* Zahl + Zählwort / Zeiteinheit */
+interface NumItem extends TrainerItem {
+  n: number | null
+}
+
+const numItem = (n: number | null, group: string): NumItem => ({ jp: n === null ? '何' : String(n), de: '', group, n })
+
+function numberDeck(base: Pick<Deck, 'id' | 'title' | 'path' | 'itemLabel' | 'groups' | 'items'>, words: NumberWord[]): Deck {
+  const word = (id: string) => words.find((w) => w.id === id)!
+  return {
+    ...base,
+    forms: words.map(({ id, label, hint }) => ({ id, label, hint })),
+    defaultForms: words.map((w) => w.id),
+    reading: true,
+    prompt: (item, form) => item.jp + form,
+    describe: (item, form) => word(form).de((item as NumItem).n),
+    answer: (item, form) => {
+      const r = word(form).reading((item as NumItem).n)
+      if (!r) return null
+      const [main, ...alts] = r.split('/')
+      return done(main, word(form).rule, alts)
+    }
+  }
+}
+
+const ONE_TO_TEN = Array.from({ length: 10 }, (_, i) => i + 1)
+
+export const counterDeck = numberDeck(
+  {
+    id: 'zaehlwoerter',
+    title: 'Zählwort-Quiz',
+    path: '/uebungen/zaehlwoerter',
+    itemLabel: 'Zahlen',
+    groups: [...ONE_TO_TEN.map((n) => ({ id: `n${n}`, label: String(n) })), { id: 'q', label: '何 (wie viele?)' }],
+    items: [...ONE_TO_TEN.map((n) => numItem(n, `n${n}`)), numItem(null, 'q')]
+  },
+  countersN5
+)
+
+export const timeDeck = numberDeck(
+  {
+    id: 'uhrzeit-datum',
+    title: 'Uhrzeit- und Datum-Quiz',
+    path: '/uebungen/uhrzeit-datum',
+    itemLabel: 'Zahlen',
+    groups: [
+      { id: 'a', label: '1–10' },
+      { id: 'b', label: '11–20' },
+      { id: 'c', label: '21–31' },
+      { id: 'q', label: '何 (Frage)' }
+    ],
+    items: [...Array.from({ length: 31 }, (_, i) => numItem(i + 1, i < 10 ? 'a' : i < 20 ? 'b' : 'c')), numItem(null, 'q')]
+  },
+  timeWords
+)
+
+export const decks: Record<string, Deck> = {
+  verben: verbDeck,
+  adjektive: adjDeck,
+  zaehlwoerter: counterDeck,
+  'uhrzeit-datum': timeDeck
+}

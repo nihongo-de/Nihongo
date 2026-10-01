@@ -130,3 +130,5 @@ Alle Arten zu bitten, zu wünschen und einzuladen findest du unter [Bitten, Wün
 8. „Ich habe noch nicht gegessen.“ → **<span lang="ja">まだ食べていません。</span>**
 9. <span lang="ja">「コーヒー、飲まないんですか。」</span> – Du trinkst tatsächlich keinen. → **<span lang="ja">はい、飲みません。</span>**
 :::
+
+Weiter üben kannst du in den [Lückentexten](../uebungen/lueckentexte#verneinung).

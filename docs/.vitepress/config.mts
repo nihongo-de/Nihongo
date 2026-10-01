@@ -50,8 +50,13 @@ const p = {
   kanjiN5Lesen: { text: 'N5-Kanji lesen', link: '/uebungen/kanji-n5' },
   kanjiQuiz: { text: 'Kanji-Quiz', link: '/uebungen/kanji-quiz' },
   partikelUebungen: { text: 'Partikel-Übungen', link: '/uebungen/partikel' },
+  lueckentexte: { text: 'Lückentexte', link: '/uebungen/lueckentexte' },
+  satzbauPuzzle: { text: 'Satzbau-Puzzle', link: '/uebungen/satzbau' },
   konjugation: { text: 'Konjugationstrainer', link: '/uebungen/konjugation' },
   adjektivTrainer: { text: 'Adjektiv-Trainer', link: '/uebungen/adjektive' },
+  karteikarten: { text: 'Vokabel-Karteikarten', link: '/uebungen/karteikarten' },
+  zaehlwortQuiz: { text: 'Zählwörter', link: '/uebungen/zaehlwoerter' },
+  uhrzeitQuiz: { text: 'Uhrzeit & Datum', link: '/uebungen/uhrzeit-datum' },
   druckvorlagen: { text: 'Druckvorlagen', link: '/uebungen/druckvorlagen' }
 }
 
@@ -161,8 +166,8 @@ export default withPwa(defineConfig({
         text: 'Übungen',
         activeMatch: '^/uebungen/',
         items: [
-          { text: 'Quiz', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen] },
-          { text: 'Trainer', items: [p.konjugation, p.adjektivTrainer] },
+          { text: 'Quiz', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen, p.lueckentexte, p.satzbauPuzzle, p.zaehlwortQuiz, p.uhrzeitQuiz] },
+          { text: 'Trainer', items: [p.konjugation, p.adjektivTrainer, p.karteikarten] },
           { text: 'Zum Ausdrucken', items: [p.druckvorlagen] }
         ]
       }
@@ -179,7 +184,7 @@ export default withPwa(defineConfig({
           { text: 'Kanji', items: [p.kanji, p.kanjiN5] },
           { text: 'Grammatik', items: [p.satzbau, p.partikel, p.partikelVergleiche, p.fragewoerter, p.existenz, p.verben, p.adjektive, p.verneinung, p.zeitformen, p.konjunktionen, p.bitten, p.erlaubnis, p.vergleiche, p.adverbien, p.vermutung] },
           { text: 'Wortschatz', items: [p.zahlen, p.zeit, p.themen, p.namen, p.redewendungen] },
-          { text: 'Übungen', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen, p.konjugation, p.adjektivTrainer] }
+          { text: 'Übungen', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen, p.lueckentexte, p.satzbauPuzzle, p.zaehlwortQuiz, p.uhrzeitQuiz, p.konjugation, p.adjektivTrainer, p.karteikarten] }
         ]
       },
       {

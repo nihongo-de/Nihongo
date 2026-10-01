@@ -25,7 +25,17 @@ const opts = reactive({
 const stats = ref<Record<string, [number, number]>>({})
 
 const pool = computed(() => deck.items.filter((i) => opts.groups.includes(i.group)))
-const available = computed(() => pool.value.length * opts.forms.length)
+const combos = computed(() =>
+  pool.value.flatMap((item) =>
+    opts.forms.flatMap((form) => {
+      const answer = deck.answer(item, form)
+      return answer ? [{ item, form, answer }] : []
+    })
+  )
+)
+const available = computed(() => combos.value.length)
+const groupSize = (id: string) => deck.items.filter((i) => i.group === id).length
+const describe = (c: Card) => (deck.describe ? deck.describe(c.item, c.form) : c.item.de)
 const formLabel = (id: string) => deck.forms.find((f) => f.id === id)?.label ?? id
 const formHint = (id: string) => deck.forms.find((f) => f.id === id)?.hint ?? ''
 const rate = (id: string) => {
@@ -56,10 +66,7 @@ const current = computed(() => queue.value[pos.value])
 const progressPct = computed(() => (queue.value.length ? (pos.value / queue.value.length) * 100 : 0))
 
 function buildCards(): Card[] {
-  const all = pool.value.flatMap((item) => opts.forms.map((form) => ({ item, form })))
-  return shuffle(all)
-    .slice(0, opts.count || all.length)
-    .map((c) => ({ ...c, answer: deck.answer(c.item, c.form) }))
+  return shuffle(combos.value).slice(0, opts.count || combos.value.length)
 }
 
 function start(cards: Card[]) {
@@ -151,7 +158,7 @@ onMounted(() => {
         <legend>{{ deck.itemLabel }}</legend>
         <label v-for="g in deck.groups" :key="g.id">
           <input v-model="opts.groups" type="checkbox" :value="g.id" /> <span lang="ja">{{ g.label }}</span>
-          <span class="ft__muted">{{ deck.items.filter((i) => i.group === g.id).length }}</span>
+          <span v-if="groupSize(g.id) > 1" class="ft__muted">{{ groupSize(g.id) }}</span>
         </label>
       </fieldset>
       <fieldset class="ft__group is-row">
@@ -165,8 +172,11 @@ onMounted(() => {
         </button>
         <button v-if="Object.keys(stats).length" type="button" class="ft__link" @click="resetStats">Statistik zurücksetzen</button>
       </div>
-      <p class="ft__note">
-        Tippe die Lösung in Rōmaji – sie wird beim Tippen in Hiragana umgewandelt (<em>nn</em> = <span lang="ja">ん</span>, Doppelkonsonant = <span lang="ja">っ</span>).
+      <p v-if="deck.reading" class="ft__note">
+        Tippe die <strong>Lesung</strong> in Rōmaji – sie wird beim Tippen in Hiragana umgewandelt (Doppelkonsonant = <span lang="ja">っ</span>, z. B. <em>sanbon</em> → <span lang="ja">さんぼん</span>, <em>ippon</em> → <span lang="ja">いっぽん</span>, <em>nannin</em> → <span lang="ja">なんにん</span>; <span lang="ja">ん</span> vor einem Vokal mit Apostroph: <em>tan'i</em> → <span lang="ja">たんい</span>).
+      </p>
+      <p v-else class="ft__note">
+        Tippe die Lösung in Rōmaji – sie wird beim Tippen in Hiragana umgewandelt (Doppelkonsonant = <span lang="ja">っ</span>, <em>nannin</em> = <span lang="ja">なんにん</span>, <span lang="ja">ん</span> vor einem Vokal mit Apostroph: <em>tan'i</em>).
         Kanji aus deiner japanischen Tastatur werden ebenfalls akzeptiert.
       </p>
     </template>
@@ -178,8 +188,9 @@ onMounted(() => {
       </div>
       <div class="ft__card" :class="{ 'is-wrong': wrong }">
         <span class="ft__word" lang="ja"><RubyText :text="deck.prompt(current.item, current.form)" /></span>
-        <span class="ft__de">{{ current.item.de }}</span>
-        <span class="ft__task">→ <strong lang="ja">{{ formLabel(current.form) }}</strong> <span class="ft__muted" lang="ja">{{ formHint(current.form) }}</span></span>
+        <span class="ft__de">{{ describe(current) }}</span>
+        <span v-if="deck.reading" class="ft__task">→ <strong>Lesung in Hiragana</strong></span>
+        <span v-else class="ft__task">→ <strong lang="ja">{{ formLabel(current.form) }}</strong> <span class="ft__muted" lang="ja">{{ formHint(current.form) }}</span></span>
         <template v-if="wrong">
           <p class="ft__solution">
             Richtig: <strong lang="ja"><RubyText :text="current.answer.ruby" /></strong>
@@ -208,6 +219,7 @@ onMounted(() => {
         <button v-if="!wrong" type="button" class="ft__btn" @click="answer = ''; submit()">Weiß nicht</button>
       </form>
       <p v-if="last && !wrong" class="ft__last" :class="last.ok ? 'is-ok' : 'is-bad'">
+        <span v-if="deck.reading" lang="ja">{{ deck.prompt(last.card.item, last.card.form) }} = </span>
         <span lang="ja"><RubyText :text="last.card.answer.ruby" /></span> {{ last.ok ? '✓' : '✗' }}
         <small lang="ja">{{ last.card.answer.rule }}</small>
       </p>
@@ -223,8 +235,8 @@ onMounted(() => {
         <p class="ft__note">Diese Formen solltest du dir noch einmal ansehen:</p>
         <ul class="ft__missed">
           <li v-for="(c, i) in missed" :key="i">
-            <span lang="ja"><RubyText :text="c.item.jp" /></span>
-            <span class="ft__muted">{{ formLabel(c.form) }}</span>
+            <span lang="ja"><RubyText :text="deck.reading ? deck.prompt(c.item, c.form) : c.item.jp" /></span>
+            <span v-if="!deck.reading" class="ft__muted">{{ formLabel(c.form) }}</span>
             <strong lang="ja"><RubyText :text="c.answer.ruby" /></strong>
           </li>
         </ul>

@@ -116,6 +116,8 @@ Welches, hängt von der **Form oder Art** des Gezählten ab.
 - Wer unsicher ist, nimmt <span lang="ja">〜つ</span> – das passt fast immer (bis 10).
 :::
 
+Üben kannst du alle Zählwörter im [Zählwort-Quiz](../uebungen/zaehlwoerter).
+
 ## Uhrzeit
 
 <div class="info-grid">
@@ -160,3 +162,4 @@ Datum und Adresse werden **vom Großen zum Kleinen** geschrieben: <span lang="ja
 :::
 
 Wochentage, <span lang="ja">今日・明日・来週</span> und Zeitspannen findest du unter [Zeitangaben](./zeit).
+Uhrzeit und Datum übst du im [Uhrzeit- und Datum-Quiz](../uebungen/uhrzeit-datum).

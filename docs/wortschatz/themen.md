@@ -7,7 +7,7 @@ description: Der N5-Grundwortschatz nach Themen – Familie, Körper, Farben, Es
 
 Rund 380 Wörter, die du für N5 brauchst, sortiert nach Alltagsthemen. Mit **Abdecken** blendest du eine Spalte aus und fragst dich selbst ab. Tippe auf **?**, um ein einzelnes Wort aufzudecken.
 
-Zahlen und Zeitangaben haben eigene Seiten: [Zahlen & Zählwörter](./zahlen) und [Zeitangaben](./zeit). Unter [Druckvorlagen](../uebungen/druckvorlagen) kannst du jedes Thema als Vokabelliste ausdrucken.
+Zahlen und Zeitangaben haben eigene Seiten: [Zahlen & Zählwörter](./zahlen) und [Zeitangaben](./zeit). Unter [Druckvorlagen](../uebungen/druckvorlagen) kannst du jedes Thema als Vokabelliste ausdrucken, mit den [Vokabel-Karteikarten](../uebungen/karteikarten) lernst du die Wörter Tag für Tag in Wiederholungsabständen.
 
 ## Familie {#familie}
 

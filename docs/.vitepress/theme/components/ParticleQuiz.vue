@@ -1,18 +1,30 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
 import { particleSets, particleSetTitles } from '../data/particles'
+import { gapSets, gapSetTitles } from '../data/gaps'
 import { recordResult } from '../utils/progress'
 import RubyText from './RubyText.vue'
 
-const props = defineProps<{ set: string }>()
+const props = withDefaults(defineProps<{ set: string; page?: 'partikel' | 'lueckentexte' }>(), { page: 'partikel' })
+
+const sources = {
+  partikel: { sets: particleSets, titles: particleSetTitles, label: 'Partikel' },
+  lueckentexte: { sets: gapSets, titles: gapSetTitles, label: 'Lückentext' }
+}
+const source = computed(() => sources[props.page])
 
 // Deterministisch mischen, damit Server- und Client-Rendering übereinstimmen
-const hash = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)
+const fmix = (h: number) => {
+  h = Math.imul(h ^ (h >>> 16), 0x85ebca6b)
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35)
+  return (h ^ (h >>> 16)) >>> 0
+}
+const hash = (s: string) => fmix([...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7))
 const mix = (options: string[], seed: string) =>
   [...options].sort((a, b) => hash(a + seed) - hash(b + seed))
 
 const items = computed(() =>
-  (particleSets[props.set] ?? []).map((item) => {
+  (source.value.sets[props.set] ?? []).map((item) => {
     const [before, after = ''] = item.jp.split('＿')
     return { ...item, before, after, options: mix(item.options.split(' '), item.jp), answers: item.answer.split('/') }
   })
@@ -33,8 +45,8 @@ function reset() {
 watch(answered, (n) => {
   if (n && n === items.value.length)
     recordResult(
-      `partikel:${props.set}`,
-      { path: `/uebungen/partikel#${props.set}`, title: `Partikel · ${particleSetTitles[props.set] ?? props.set}` },
+      `${props.page}:${props.set}`,
+      { path: `/uebungen/${props.page}#${props.set}`, title: `${source.value.label} · ${source.value.titles[props.set] ?? props.set}` },
       right.value,
       n
     )
@@ -56,7 +68,7 @@ watch(answered, (n) => {
         :class="{ 'is-right': chosen[i] !== undefined && item.answers.includes(chosen[i]), 'is-wrong': chosen[i] !== undefined && !item.answers.includes(chosen[i]) }"
       >
         <p class="pquiz__jp" lang="ja">
-          <RubyText :text="item.before" /><span class="pquiz__blank">{{ blank(item, i) }}</span><RubyText :text="item.after" />
+          <RubyText :text="item.before" /><span class="pquiz__blank"><RubyText :text="blank(item, i)" /></span><RubyText :text="item.after" />
         </p>
         <p class="pquiz__de">{{ item.de }}</p>
         <div class="pquiz__options" role="group" :aria-label="`Antwort für Satz ${i + 1}`">
@@ -73,7 +85,7 @@ watch(answered, (n) => {
             }"
             @click="chosen[i] = o"
           >
-            {{ label(o) }}
+            <RubyText :text="label(o)" />
           </button>
         </div>
         <p v-if="chosen[i] !== undefined" class="pquiz__why">

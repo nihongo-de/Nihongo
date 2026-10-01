@@ -54,7 +54,25 @@ export function toKana(input: string, final = false): string {
       continue
     }
     if (c === 'n') {
-      if (next === 'n' || next === "'") {
+      if (next === "'") {
+        out += 'ん'
+        i += 2
+        continue
+      }
+      if (next === 'n') {
+        const after = s[i + 2] ?? ''
+        // Wie Hepburn: nn + Vokal = ん + な-Reihe (nannin → なんにん)
+        if (VOWEL.test(after)) {
+          out += 'ん'
+          i++
+          continue
+        }
+        // Erst der nächste Buchstabe entscheidet
+        if (!after && !final) {
+          out += 'nn'
+          i += 2
+          continue
+        }
         out += 'ん'
         i += 2
         continue

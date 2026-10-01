@@ -72,7 +72,7 @@ for (const deck of Object.values(m.decks))
   for (const item of deck.items)
     for (const form of deck.forms) {
       const a = deck.answer(item, form.id)
-      add(a.plain, a.ruby)
+      if (a) add(a.plain, a.ruby)
     }
 
 // Kana (KanaChart.vue): eine Datei je Rōmaji, als Katakana gesprochen, damit z. B. は nicht als Partikel „wa“ gelesen wird;

@@ -137,3 +137,5 @@ Ein direktes „Nein“ klingt im Japanischen hart. Üblich ist <span lang="ja">
 7. Jemand trägt schwere Taschen – du bietest Hilfe an. → **<span lang="ja">持ちましょうか。</span>**
 8. Du musst eine Einladung höflich ablehnen. → **<span lang="ja">すみません、ちょっと…。</span>**
 :::
+
+Weiter üben kannst du in den [Lückentexten](../uebungen/lueckentexte#bitten).

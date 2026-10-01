@@ -136,3 +136,5 @@ Deutsch: **unter** dem Tisch – Japanisch: <span lang="ja">机の**下**</span>
 7. „hinter dem Haus“ → **<span lang="ja">家の後ろ</span>**
 8. <span lang="ja">お金が（　）。</span> – Ich habe kein Geld (einfache Form). → **ない**
 :::
+
+Weiter üben kannst du in den [Lückentexten](../uebungen/lueckentexte#existenz).
