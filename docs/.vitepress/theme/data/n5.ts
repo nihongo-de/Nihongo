@@ -104,8 +104,8 @@ export const n5Groups: N5Group[] = [
     title: 'Menschen & Familie',
     kanji: k(`
       人 | ジン・ニン | ひと | Mensch | 日本人[にほんじん] | Japaner(in)
-      男 | ダン・ナン | おとこ | Mann | 男の子[おとこのこ] | Junge
-      女 | ジョ | おんな | Frau | 女の人[おんなのひと] | Frau
+      男 | ダン・ナン | おとこ | Mann | 男[おとこ]の子[こ] | Junge
+      女 | ジョ | おんな | Frau | 女[おんな]の人[ひと] | Frau
       子 | シ・ス | こ | Kind | 子[こ]ども | Kind
       父 | フ | ちち | Vater | お父[とう]さん | (dein) Vater
       母 | ボ | はは | Mutter | お母[かあ]さん | (deine) Mutter

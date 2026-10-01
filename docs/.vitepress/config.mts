@@ -1,5 +1,8 @@
 import { defineConfig } from 'vitepress'
 import { withPwa } from '@vite-pwa/vitepress'
+import { rm } from 'node:fs/promises'
+import { join } from 'node:path'
+import { AUDIO_ENABLED } from './theme/utils/audio'
 
 // Set by the deploy workflow from GitHub Pages ("/" for nihongo-de.github.io, "/<repo>/" otherwise)
 const base = process.env.BASE_PATH || '/'
@@ -58,6 +61,10 @@ export default withPwa(defineConfig({
   title: 'Nihongo',
   description: 'Japanisch lernen – Schrift, Aussprache, Partikel und Grammatik kompakt erklärt.',
   cleanUrls: true,
+  // Aufnahmen aus public/audio nicht ausliefern, solange das Vorlesen aus ist (läuft vor der Service-Worker-Erzeugung)
+  async buildEnd({ outDir }) {
+    if (!AUDIO_ENABLED) await rm(join(outDir, 'audio'), { recursive: true, force: true })
+  },
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}logo.svg` }],
     ['link', { rel: 'apple-touch-icon', href: `${base}apple-touch-icon-180x180.png` }],
@@ -71,8 +78,9 @@ export default withPwa(defineConfig({
   ],
 
   pwa: {
-    registerType: 'autoUpdate',
-    injectRegister: 'script-defer',
+    // Registrierung, Update-Hinweis und periodische Prüfung in theme/components/ReloadPrompt.vue
+    registerType: 'prompt',
+    injectRegister: false,
     manifest: {
       name: 'Nihongo – Japanisch lernen',
       short_name: 'Nihongo',
@@ -91,10 +99,21 @@ export default withPwa(defineConfig({
     },
     workbox: {
       // Fonts are excluded here and cached on first use instead (~10 MB of Noto Sans JP subsets)
-      globPatterns: ['**/*.{js,css,html,svg,png,ico,txt}'],
+      globPatterns: ['**/*.{js,css,html,svg,png,ico,txt}', ...(AUDIO_ENABLED ? ['audio/index.json'] : [])],
       // Kanji-Strichdaten (~2,3 MB) erst bei Bedarf laden und dann cachen
       globIgnores: ['**/strokes-kanji-*.js'],
       runtimeCaching: [
+        {
+          // Aufnahmen (~9 MB) erst beim Abspielen; <audio> fragt mit Range-Header an
+          urlPattern: /\/audio\/.+\.mp3$/,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'audio',
+            rangeRequests: true,
+            expiration: { maxEntries: 2000 },
+            cacheableResponse: { statuses: [0, 200] }
+          }
+        },
         {
           urlPattern: /\/strokes-kanji-[0-9a-f]\.[\w-]+\.js$/,
           handler: 'CacheFirst',

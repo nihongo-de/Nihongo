@@ -22,7 +22,7 @@ Die Seite ist eine Progressive Web App und funktioniert nach dem ersten Besuch a
 - **iPhone/iPad (Safari):** Teilen → „Zum Home-Bildschirm"
 - **Desktop (Chrome/Edge):** Installations-Symbol in der Adressleiste
 
-Updates werden automatisch geladen.
+Neue Inhalte werden im Hintergrund geladen (beim Öffnen, stündlich und beim Zurückholen der App); dann erscheint der Hinweis „Neue Inhalte verfügbar – Neu laden“.
 
 ## Entwicklung
 
@@ -35,7 +35,18 @@ npm run build     # Produktions-Build nach docs/.vitepress/dist
 npm run preview   # Build lokal testen (inkl. Service Worker/Offline)
 npm run kanji     # N3–N1-Listen neu erzeugen (data/n{3,2,1}.json, deutsche Bedeutungen aus scripts/data/kanji-de.tsv)
 npm run strokes   # Strichdaten von KanjiVG laden – nach neuen Kanji/Kana erneut ausführen
+npm run audio     # Aufnahmen für Vorlese-Knöpfe und Kana erzeugen (docs/public/audio) – nach neuen Sätzen/Wörtern erneut ausführen
 ```
+
+Für `npm run audio` werden Python mit [pyopenjtalk-plus](https://pypi.org/project/pyopenjtalk-plus/) (Open JTalk mit der Stimme „Mei“, CC BY 3.0) und ffmpeg benötigt:
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install pyopenjtalk-plus
+```
+
+Vorhandene Dateien werden übersprungen (`npm run audio -- --force` erzeugt alle neu). Liest Open JTalk ein Kanji anders als die Furigana, wird mit den Furigana synthetisiert; Abweichungen ohne Furigana listet das Skript auf.
+
+Das Vorlesen ist derzeit abgeschaltet (`AUDIO_ENABLED` in `docs/.vitepress/theme/utils/audio.ts`); `docs/public/audio` ist nicht im Git und wird beim Build aus der Ausgabe entfernt.
 
 Der Service Worker ist nur im Build aktiv, nicht im Entwicklungsserver.
 

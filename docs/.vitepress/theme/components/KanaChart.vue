@@ -2,7 +2,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { kanaSets, toKatakana, type KanaSet } from '../data/kana'
 import { loadRatings, ratingLabels, ratings } from '../utils/strokes'
-import { speak, voices } from '../utils/settings'
+import { speakKana } from '../utils/settings'
+import { AUDIO_ENABLED } from '../utils/audio'
 import StrokeDialog from './StrokeDialog.vue'
 
 const props = withDefaults(
@@ -24,7 +25,7 @@ const listen = ref(false)
 
 // Im Quiz-Modus deckt das erste Antippen (Touch) die Lösung auf, erst das zweite öffnet die Strichfolge
 function onCell(kana: string, romaji: string) {
-  if (listen.value && voices.value.length) return speak(kana)
+  if (listen.value) return speakKana(kana, romaji)
   if (quiz.value && !shown.value.has(kana) && !matchMedia('(hover: hover)').matches) {
     shown.value = new Set(shown.value).add(kana)
     return
@@ -44,7 +45,7 @@ onMounted(loadRatings)
   <div class="kana-chart" :class="{ 'is-quiz': quiz }">
     <div class="kana-chart__bar">
       <span class="kana-chart__label">{{ table.label }}</span>
-      <button v-if="voices.length" type="button" class="kana-chart__toggle" :aria-pressed="listen" @click="listen = !listen">
+      <button v-if="AUDIO_ENABLED" type="button" class="kana-chart__toggle" :aria-pressed="listen" @click="listen = !listen">
         {{ listen ? 'Strichfolge zeigen' : 'Anhören' }}
       </button>
       <button type="button" class="kana-chart__toggle" :aria-pressed="quiz" @click="toggleQuiz">
@@ -60,7 +61,7 @@ onMounted(loadRatings)
             class="kana-cell"
             :class="{ 'is-shown': shown.has(show(cell[0])) }"
             :aria-label="quiz ? show(cell[0]) : `${show(cell[0])} (${cell[1]})`"
-            :title="listen && voices.length ? 'Vorlesen' : 'Strichfolge ansehen und schreiben üben'"
+            :title="listen ? 'Vorlesen' : 'Strichfolge ansehen und schreiben üben'"
             @click="onCell(show(cell[0]), cell[1])"
           >
             <span class="kana-cell__kana" lang="ja">{{ show(cell[0]) }}</span>
@@ -75,7 +76,7 @@ onMounted(loadRatings)
         </template>
       </template>
     </div>
-    <p v-if="listen && voices.length" class="kana-chart__hint">Tippe ein Zeichen an, um es zu hören.</p>
+    <p v-if="listen" class="kana-chart__hint">Tippe ein Zeichen an, um es zu hören.</p>
     <p v-else-if="quiz" class="kana-chart__hint">
       Fahre über ein Zeichen oder tippe es an, um die Lösung zu sehen. Ein Klick (bzw. zweites Antippen) öffnet die Strichfolge.
     </p>

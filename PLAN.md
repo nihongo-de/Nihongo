@@ -3,16 +3,18 @@
 Themen und Features nach JLPT-Niveau geordnet. Wir arbeiten von oben nach unten.
 Jede neue Seite wird im Lernpfad (Sidebar) und im Dropdown ihrer Rubrik (Navigationsleiste) eingetragen.
 
-Legende: `[ ]` offen · `[~]` teilweise vorhanden · `[x]` erledigt
+Legende: `[ ]` offen · `[~]` teilweise vorhanden · `[x]` erledigt · `[-]` zurückgestellt (nicht bearbeiten)
 
 ---
 
-## Bugs (zu fixen am 01.10.2026)
+## Bugs (bearbeitet am 01.10.2026)
 
-- [ ] **Audio-Qualität**: Die Sprachausgabe (`speak()` in `utils/settings.ts`) klingt sehr robotisch und muss deutlich besser werden (bessere Stimmen bevorzugen/auswählen, Tempo/Tonhöhe prüfen, ggf. Alternative zur Web Speech API wie vorab erzeugte Audiodateien)
-- [ ] **Falsche Kana-Aussprache**: Bei den Hiragana な・に・ぬ・ね・の werden „la li lu le lo“ ausgegeben statt „na ni nu ne no“
-- [ ] **Alle Kana-Audios überprüfen**: Hiragana und Katakana (inkl. Dakuten, Kombinationen wie きゃ, Sonderzeichen ん/っ/ー) einzeln durchhören und fehlerhafte Aussprachen korrigieren
-- [ ] **PWA-Updates sichtbar machen**: Neue Inhalte erscheinen derzeit erst beim übernächsten Öffnen, ohne Hinweis; die App auf dem Startbildschirm prüft beim Fortsetzen aus dem Hintergrund gar nicht. Lösung: `registerType: 'prompt'` + Banner „Neue Inhalte verfügbar – Neu laden“ (`useRegisterSW` aus `virtual:pwa-register/vue`), zusätzlich periodische Update-Prüfung (z. B. stündlich und bei `visibilitychange`)
+> **Audio ist bis auf Weiteres zurückgestellt.** Nicht daran arbeiten, nichts wieder einschalten und keine neuen Aufnahmen erzeugen (`npm run audio` nicht ausführen), bis ausdrücklich eine neue Lösung beauftragt wird. Neue Features ohne Audio umsetzen (kein `<SpeakButton>`, Hörbeispiele weglassen) und einfach mit dem nächsten offenen Punkt weitermachen.
+
+- [-] **Audio-Qualität**: auch mit den Aufnahmen noch nicht gut genug → **Vorlesen vorerst abgeschaltet** (`AUDIO_ENABLED = false` in `utils/audio.ts`: keine Lautsprecher-Knöpfe, kein „Anhören“ in den Kana-Tabellen, kein Vorlesen-Bereich im Menü „あ“; `public/audio` ist nicht im Git und wird beim Build aus `dist` entfernt). Gesucht: bessere Alternative (z. B. natürlichere neuronale Stimme oder echte Sprachaufnahmen). Vorhanden und wiederverwendbar: Stimmen-Rangfolge, Wiedergabe vorab erzeugter Dateien, `npm run audio` mit Lesungs-Prüfung gegen die Furigana. Bisheriger Stand: Systemstimmen werden nach Qualität sortiert (Google/Apple/Microsoft/„Natural“ vor eSpeak), „Automatisch“ nimmt die beste. Klingt sie robotisch (eSpeak/speech-dispatcher unter Linux) oder fehlt sie, spielen vorab erzeugte Aufnahmen (`npm run audio`: Open JTalk, Stimme „Mei“, CC BY 3.0, ~1440 Texte, ~9 MB MP3 in `public/audio`, Tempo per `playbackRate` mit erhaltener Tonhöhe). Lesungen werden gegen die Furigana geprüft und bei Abweichung aus den Furigana synthetisiert
+- [x] **Falsche Kana-Aussprache**: Kana-Tabellen spielen immer eigene Aufnahmen (`audio/kana/<rōmaji>.mp3`, als Katakana synthetisiert, damit は/へ/を nicht als Partikel gelesen werden), unabhängig von der Systemstimme
+- [x] **Alle Kana-Audios überprüft**: alle 123 Laute (Grundzeichen, Dakuten, Yōon, erweiterte Katakana, ん) automatisch geprüft – synthetisierte Phoneme = Rōmaji der Tabelle, Dauer plausibel; Katakana nutzen dieselben Dateien. (っ und ー haben allein keinen eigenen Laut und keinen Vorlese-Knopf)
+- [x] **PWA-Updates sichtbar machen**: `registerType: 'prompt'`, Banner „Neue Inhalte verfügbar – Neu laden / Später“ (`ReloadPrompt.vue`, `virtual:pwa-register`), Update-Prüfung stündlich und bei `visibilitychange`
 
 ---
 
@@ -67,7 +69,7 @@ Legende: `[ ]` offen · `[~]` teilweise vorhanden · `[x]` erledigt
 
 ### Übungen & Features
 
-- [x] **Audio** per Web Speech API (`utils/settings.ts` → `speak()`, `<SpeakButton>`): Lautsprecher an jedem `<Ex>`, am Beispielwort der KanjiCards, in den Vokabellisten und in den Trainern; Kana-Tabellen mit Schalter „Anhören“. Erscheint nur, wenn eine japanische Stimme installiert ist; Tempo und Stimme im Menü „あ“
+- [x] **Audio** per Web Speech API (`utils/settings.ts` → `speak()`, `<SpeakButton>`): Lautsprecher an jedem `<Ex>`, am Beispielwort der KanjiCards, in den Vokabellisten und in den Trainern; Kana-Tabellen mit Schalter „Anhören“. Vorab erzeugte Aufnahmen oder Systemstimme (siehe Bugs); Tempo und Stimme im Menü „あ“ – **derzeit abgeschaltet**, siehe Bugs
 - [x] **Globaler Schalter für Furigana und Rōmaji** (Menü „あ“ in der Navigationsleiste, localStorage `nihongo:settings`, per Inline-Skript vor dem ersten Rendern angewendet): Furigana auf allen Seiten, Rōmaji in `<Ex>`-Sätzen
 - [x] **Konjugationstrainer (Stufe N5)** (`uebungen/konjugation.md`, `<FormTrainer deck="verben">`): ます/ません/ました/ませんでした, Wörterbuch-, ない-, た-, て-Form für 53 Verben; Rōmaji werden beim Tippen in Kana umgewandelt (`utils/kanaInput.ts`); Formen und Verbgruppen wählbar; Regel-Erklärung bei Fehlern; Trefferquote je Form in localStorage; Ergebnis in der Fortschrittsübersicht
 - [x] **Adjektiv-Trainer** (`uebungen/adjektive.md`, gleiche Komponente): い/な × verneint/Vergangenheit/verneinte Vergangenheit × einfach/höflich, Varianten (くありません, ではありません …) akzeptiert, Fallen いい → よくない, 〜かったです, きれい/嫌い
@@ -75,7 +77,7 @@ Legende: `[ ]` offen · `[~]` teilweise vorhanden · `[x]` erledigt
 - [ ] **Uhrzeit- und Datum-Quiz**: 4時 = よじ, 9時 = くじ, ついたち/はつか/ようか
 - [ ] **Satzbau-Puzzle**: Wortblöcke per Drag & Drop in die richtige Reihenfolge bringen
 - [ ] **Lückentexte zu Formen (N5)** nach dem Muster der Partikel-Übungen: Fragewörter, Verneinung, Existenz, Bitten/Wünsche
-- [ ] **Tonhöhen-Quiz**: Minimalpaare (箸/橋/端, 雨/飴) Diagramm oder Hörbeispiel zuordnen
+- [ ] **Tonhöhen-Quiz**: Minimalpaare (箸/橋/端, 雨/飴) dem Diagramm zuordnen (Hörbeispiele erst, wenn Audio wieder aktiv ist)
 - [ ] **Vokabel-Karteikarten mit SRS** (Spaced Repetition, localStorage) auf Basis der N5-Vokabelliste
 - [ ] **Leseübungen N5**: kurze Texte mit Furigana-Schalter, aufklappbarer Übersetzung und Verständnisfragen
 - [ ] Kanji-Quiz direkt mit Stufe verlinkbar (z. B. `?stufe=n5`), damit jede Stufe im Lernpfad ihr eigenes Quiz hat

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { initSettings, settings, speak, voices } from '../utils/settings'
+import { activeVoice, clips, initSettings, isRobotic, REC, settings, speak, voices } from '../utils/settings'
+import { AUDIO_ENABLED, sampleSentence } from '../utils/audio'
 
 const open = ref(false)
 const root = ref<HTMLElement>()
@@ -30,8 +31,8 @@ onUnmounted(() => {
     <button
       type="button"
       class="ds__toggle"
-      title="Anzeige & Vorlesen"
-      aria-label="Anzeige & Vorlesen"
+      :title="AUDIO_ENABLED ? 'Anzeige & Vorlesen' : 'Anzeige'"
+      :aria-label="AUDIO_ENABLED ? 'Anzeige & Vorlesen' : 'Anzeige'"
       aria-haspopup="true"
       :aria-expanded="open"
       @click="open = !open"
@@ -44,26 +45,39 @@ onUnmounted(() => {
       <label class="ds__check"><input v-model="settings.furigana" type="checkbox" /> Furigana über Kanji <span class="ds__muted" lang="ja">漢字<small>かんじ</small></span></label>
       <label class="ds__check"><input v-model="settings.romaji" type="checkbox" /> Rōmaji in Beispielsätzen</label>
 
+      <template v-if="AUDIO_ENABLED">
       <p class="ds__label">Vorlesen</p>
-      <template v-if="voices.length">
+      <template v-if="voices.length || clips.size">
         <label class="ds__row">
           Tempo
           <input v-model.number="settings.rate" type="range" min="0.5" max="1.3" step="0.1" />
           <span class="ds__muted">{{ settings.rate.toFixed(1) }}×</span>
         </label>
-        <label v-if="voices.length > 1" class="ds__row">
+        <label v-if="voices.length && clips.size" class="ds__row">
           Stimme
           <select v-model="settings.voice">
-            <option value="">Standard</option>
-            <option v-for="v in voices" :key="v.voiceURI" :value="v.voiceURI">{{ v.name }}</option>
+            <option value="">Automatisch (beste verfügbare)</option>
+            <option :value="REC">Aufnahmen der Seite</option>
+            <option v-for="v in voices" :key="v.voiceURI" :value="v.voiceURI">{{ v.name }}{{ isRobotic(v) ? ' (robotisch)' : '' }}</option>
           </select>
         </label>
-        <button type="button" class="ds__test" @click="speak('こんにちは。日本語を勉強しています。')">Probe hören</button>
-        <p class="ds__hint">Das Lautsprecher-Symbol neben Beispielsätzen und Wörtern liest sie vor.</p>
+        <button type="button" class="ds__test" @click="speak(sampleSentence)">Probe hören</button>
+        <p class="ds__hint">
+          Das Lautsprecher-Symbol neben Beispielsätzen und Wörtern liest sie vor.
+          <template v-if="activeVoice">Stimme: {{ activeVoice.name }}.</template>
+          <template v-else-if="settings.voice === REC || !voices.length">Verwendet werden vorab erzeugte Aufnahmen (Open JTalk, Stimme „Mei“).</template>
+          <template v-else>Verwendet werden vorab erzeugte Aufnahmen (Open JTalk, Stimme „Mei“), weil die Systemstimme sehr robotisch klingt.</template>
+          Kana in den Tabellen werden immer als Aufnahme abgespielt.
+        </p>
+        <p v-if="clips.size" class="ds__hint ds__muted">
+          Aufnahmen: <a href="https://open-jtalk.sourceforge.net/" target="_blank" rel="noopener">Open JTalk</a>, Stimme „Mei“ © Nagoya Institute of Technology,
+          <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a>
+        </p>
       </template>
       <p v-else class="ds__hint">
         {{ supported ? 'Keine japanische Stimme gefunden. Installiere eine japanische Sprachausgabe in deinem System oder nutze einen anderen Browser, dann erscheinen die Vorlese-Knöpfe.' : 'Dein Browser unterstützt keine Sprachausgabe.' }}
       </p>
+      </template>
     </div>
   </div>
 </template>

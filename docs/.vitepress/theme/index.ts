@@ -27,6 +27,7 @@ import LearnDashboard from './components/LearnDashboard.vue'
 import VocabList from './components/VocabList.vue'
 import DisplaySettings from './components/DisplaySettings.vue'
 import FormTrainer from './components/FormTrainer.vue'
+import ReloadPrompt from './components/ReloadPrompt.vue'
 
 // Zugeklappte Details-Blöcke beim Drucken aufklappen und danach wieder schließen
 if (inBrowser) {
@@ -48,7 +49,7 @@ export default {
       'nav-bar-content-after': () => [h(DisplaySettings), h(BookmarkMenu), h(PrintAllButton)],
       'doc-before': () => h(PageActions),
       'doc-footer-before': () => h(PageActions, { footer: true }),
-      'layout-bottom': () => [h(PrintDialog), h(ProgressTracker)]
+      'layout-bottom': () => [h(PrintDialog), h(ProgressTracker), h(ReloadPrompt)]
     }),
   enhanceApp({ app }) {
     app.component('KanaChart', KanaChart)

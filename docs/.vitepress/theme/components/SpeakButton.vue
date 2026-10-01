@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { speak, speaking, voices } from '../utils/settings'
+import { canSpeak, speak, speaking } from '../utils/settings'
 
 defineProps<{ text: string }>()
 </script>
 
 <template>
   <button
-    v-if="voices.length"
+    v-if="canSpeak(text)"
     type="button"
     class="speak"
     :class="{ 'is-active': speaking === text }"
