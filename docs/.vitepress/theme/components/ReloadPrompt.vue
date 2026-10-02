@@ -7,6 +7,7 @@ const needRefresh = ref(false)
 const reloading = ref(false)
 let updateSW: ((reload?: boolean) => Promise<void>) | undefined
 let check: (() => Promise<void>) | undefined
+let registration: ServiceWorkerRegistration | undefined
 let timer: ReturnType<typeof setInterval> | undefined
 
 function onVisible() {
@@ -21,6 +22,7 @@ onMounted(async () => {
     onNeedRefresh: () => (needRefresh.value = true),
     onRegisteredSW(swUrl, reg) {
       if (!reg) return
+      registration = reg
       let last = 0
       // Kein Update-Check, wenn offline oder gerade schon einer läuft
       check = async () => {
@@ -45,6 +47,13 @@ onUnmounted(() => {
 
 function reload() {
   reloading.value = true
+  const done = () => window.location.reload()
+  // updateSW lädt nur bei controllerchange neu – der kommt nicht, wenn die Seite ohne SW geladen wurde
+  const waiting = registration?.waiting
+  if (!waiting) return done()
+  waiting.addEventListener('statechange', () => waiting.state === 'activated' && done())
+  navigator.serviceWorker.addEventListener('controllerchange', done)
+  setTimeout(done, 5000)
   updateSW?.(true)
 }
 </script>
