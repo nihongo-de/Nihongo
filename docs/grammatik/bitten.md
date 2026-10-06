@@ -9,14 +9,14 @@ Um etwas bitten, sagen, was du willst, jemanden einladen oder Hilfe anbieten: F�
 
 ## Um etwas bitten {#bitten}
 
-### Dinge: 〜をください
+### Dinge: 〜をください {#wo-kudasai}
 
 Willst du etwas **haben**, hängst du <span lang="ja">をください</span> oder das etwas weichere <span lang="ja">をお願いします</span> an:
 
 <Ex jp="水[みず]{をください}。" ro="mizu o kudasai." de="Wasser, bitte." />
 <Ex jp="コーヒーを二[ふた]つ{お願[ねが]いします}。" ro="kōhī o futatsu onegai shimasu." de="Zwei Kaffee, bitte." />
 
-### Handlungen: 〜てください
+### Handlungen: 〜てください {#te-kudasai}
 
 Soll jemand etwas **tun**, nimmst du die [て-Form](./verben#te-form) + <span lang="ja">ください</span>:
 

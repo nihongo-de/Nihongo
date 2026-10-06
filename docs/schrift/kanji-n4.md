@@ -84,5 +84,5 @@ Tippe auf ein Kanji, um die **Strichfolge** als Animation zu sehen und das Zeich
 <KanjiGrid level="n4" group="begriffe" />
 
 ::: info Weiter üben
-Im [Kanji-Quiz](../uebungen/kanji-quiz) kannst du die N4-Kanji per Multiple Choice, Schreibübung oder Flashcards abfragen. Weiter geht es mit den [N3 Kanji](./kanji-n3).
+Im [Kanji-Quiz](../uebungen/kanji-quiz#n4) kannst du die N4-Kanji per Multiple Choice, Schreibübung oder Flashcards abfragen. Weiter geht es mit den [N3 Kanji](./kanji-n3).
 :::

@@ -1,6 +1,9 @@
 ---
 title: Kanji-Quiz
 description: Kanji von N5 bis N1 per Multiple Choice, Schreibübung oder Flashcards abfragen.
+# Feste Nachbarn, weil die Seite im Lernpfad pro Stufe (#n5 … #n1) vorkommt
+prev: { text: 'N5-Kanji lesen', link: '/uebungen/kanji-n5' }
+next: { text: 'Partikel-Übungen', link: '/uebungen/partikel' }
 ---
 
 # Kanji-Quiz
@@ -12,6 +15,7 @@ Wähle aus, welche Kanji abgefragt werden und wie:
 - **Flashcards** – du hast eine einstellbare Zeit, um das Kanji zu lesen; danach werden Bedeutung, Lesungen und ein Beispielwort aufgedeckt.
 
 Welche Kanji drankommen, bestimmst du selbst: ganze Stufen von N5 bis N1, einzelne Gruppen oder gezielt einzelne Zeichen.
+Direkt mit einer Stufe starten: [N5](#n5) · [N4](#n4) · [N3](#n3) · [N2](#n2) · [N1](#n1).
 Mit **Zum Üben markierte** wählst du alle Kanji, die du beim Schreiben mit dem roten oder gelben Daumen bewertet hast.
 Die Reihenfolge ist zufällig; Fehler kommen am Ende der Runde noch einmal dran.
 

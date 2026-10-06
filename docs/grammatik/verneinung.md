@@ -41,7 +41,7 @@ Wer die い-Adjektive kann, kann damit jede Verneinung in die Vergangenheit setz
 <span lang="ja">高く**ありません**</span> und <span lang="ja">学生**ではありません**</span> sind etwas förmlicher als <span lang="ja">高くないです</span> und <span lang="ja">学生じゃないです</span>. Im Alltag hörst du beides; in Texten steht eher die förmliche Variante.
 :::
 
-### Die Sonderfälle
+### Die Sonderfälle {#sonderfaelle}
 
 <div class="info-grid wide">
   <div class="info-card"><span class="info-card__label">いい → よくない</span><span class="info-card__text">„gut“ konjugiert über die alte Form <span lang="ja">よい</span>: <span lang="ja">よくない、よくなかった</span></span></div>

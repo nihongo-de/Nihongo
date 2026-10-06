@@ -60,5 +60,5 @@ Tippe auf ein Kanji, um die **Strichfolge** als Animation zu sehen und das Zeich
 
 ::: info Weiter üben
 Zu jeder Gruppe gibt es [Lesesätze mit Furigana](../uebungen/kanji-n5) – dort kannst du die Lesehilfe ausblenden und dich selbst testen.
-Im [Kanji-Quiz](../uebungen/kanji-quiz) fragst du die Kanji per Multiple Choice, Schreibübung oder Flashcards ab. Weiter geht es mit den [N4 Kanji](./kanji-n4).
+Im [Kanji-Quiz](../uebungen/kanji-quiz#n5) fragst du die Kanji per Multiple Choice, Schreibübung oder Flashcards ab. Weiter geht es mit den [N4 Kanji](./kanji-n4).
 :::

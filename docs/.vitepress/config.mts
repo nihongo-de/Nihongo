@@ -41,6 +41,7 @@ const p = {
   adverbien: { text: 'Adverbien & Häufigkeit', link: '/grammatik/adverbien' },
   vermutung: { text: 'Vermutung – でしょう', link: '/grammatik/vermutung' },
   hoeflichkeit: { text: 'Höflichkeit & Keigo', link: '/grammatik/hoeflichkeit' },
+  grammatikIndex: { text: 'Grammatik A–Z', link: '/grammatik/a-z' },
   zahlen: { text: 'Zahlen & Zählwörter', link: '/wortschatz/zahlen' },
   zeit: { text: 'Zeitangaben', link: '/wortschatz/zeit' },
   themen: { text: 'Wortschatz nach Themen', link: '/wortschatz/themen' },
@@ -57,8 +58,12 @@ const p = {
   karteikarten: { text: 'Vokabel-Karteikarten', link: '/uebungen/karteikarten' },
   zaehlwortQuiz: { text: 'Zählwörter', link: '/uebungen/zaehlwoerter' },
   uhrzeitQuiz: { text: 'Uhrzeit & Datum', link: '/uebungen/uhrzeit-datum' },
+  lesen: { text: 'Leseübungen', link: '/uebungen/lesen' },
   druckvorlagen: { text: 'Druckvorlagen', link: '/uebungen/druckvorlagen' }
 }
+
+// Kanji-Quiz mit vorausgewählter Stufe (KanjiQuiz.vue liest den Hash)
+const kanjiQuiz = (level: string) => ({ text: `${level.toUpperCase()}-Kanji-Quiz`, link: `/uebungen/kanji-quiz#${level}` })
 
 export default withPwa(defineConfig({
   base,
@@ -159,7 +164,7 @@ export default withPwa(defineConfig({
       {
         text: 'Grammatik',
         activeMatch: '^/grammatik/',
-        items: [p.satzbau, p.partikel, p.partikelVergleiche, p.fragewoerter, p.existenz, p.verben, p.adjektive, p.verneinung, p.zeitformen, p.konjunktionen, p.bitten, p.erlaubnis, p.vergleiche, p.adverbien, p.vermutung, p.hoeflichkeit]
+        items: [p.satzbau, p.partikel, p.partikelVergleiche, p.fragewoerter, p.existenz, p.verben, p.adjektive, p.verneinung, p.zeitformen, p.konjunktionen, p.bitten, p.erlaubnis, p.vergleiche, p.adverbien, p.vermutung, p.hoeflichkeit, p.grammatikIndex]
       },
       { text: 'Wortschatz', activeMatch: '^/wortschatz/', items: [p.zahlen, p.zeit, p.themen, p.namen, p.redewendungen] },
       {
@@ -168,6 +173,7 @@ export default withPwa(defineConfig({
         items: [
           { text: 'Quiz', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen, p.lueckentexte, p.satzbauPuzzle, p.zaehlwortQuiz, p.uhrzeitQuiz] },
           { text: 'Trainer', items: [p.konjugation, p.adjektivTrainer, p.karteikarten] },
+          { text: 'Lesen', items: [p.lesen] },
           { text: 'Zum Ausdrucken', items: [p.druckvorlagen] }
         ]
       }
@@ -184,7 +190,7 @@ export default withPwa(defineConfig({
           { text: 'Kanji', items: [p.kanji, p.kanjiN5] },
           { text: 'Grammatik', items: [p.satzbau, p.partikel, p.partikelVergleiche, p.fragewoerter, p.existenz, p.verben, p.adjektive, p.verneinung, p.zeitformen, p.konjunktionen, p.bitten, p.erlaubnis, p.vergleiche, p.adverbien, p.vermutung] },
           { text: 'Wortschatz', items: [p.zahlen, p.zeit, p.themen, p.namen, p.redewendungen] },
-          { text: 'Übungen', items: [p.kanaQuiz, p.kanjiN5Lesen, p.kanjiQuiz, p.partikelUebungen, p.lueckentexte, p.satzbauPuzzle, p.zaehlwortQuiz, p.uhrzeitQuiz, p.konjugation, p.adjektivTrainer, p.karteikarten] }
+          { text: 'Übungen', items: [p.kanaQuiz, p.kanjiN5Lesen, kanjiQuiz('n5'), p.partikelUebungen, p.lueckentexte, p.satzbauPuzzle, p.zaehlwortQuiz, p.uhrzeitQuiz, p.konjugation, p.adjektivTrainer, p.karteikarten, p.lesen] }
         ]
       },
       {
@@ -192,13 +198,14 @@ export default withPwa(defineConfig({
         collapsed: true,
         items: [
           { text: 'Kanji', items: [p.kanjiN4] },
-          { text: 'Grammatik', items: [p.hoeflichkeit] }
+          { text: 'Grammatik', items: [p.hoeflichkeit] },
+          { text: 'Übungen', items: [kanjiQuiz('n4')] }
         ]
       },
-      { text: 'N3 – Mittelstufe', collapsed: true, items: [{ text: 'Kanji', items: [p.kanjiN3] }] },
-      { text: 'N2 – Fortgeschritten', collapsed: true, items: [{ text: 'Kanji', items: [p.kanjiN2] }] },
-      { text: 'N1 – Experte', collapsed: true, items: [{ text: 'Kanji', items: [p.kanjiN1] }] },
-      { text: 'Werkzeuge', collapsed: true, items: [p.druckvorlagen] }
+      { text: 'N3 – Mittelstufe', collapsed: true, items: [{ text: 'Kanji', items: [p.kanjiN3] }, { text: 'Übungen', items: [kanjiQuiz('n3')] }] },
+      { text: 'N2 – Fortgeschritten', collapsed: true, items: [{ text: 'Kanji', items: [p.kanjiN2] }, { text: 'Übungen', items: [kanjiQuiz('n2')] }] },
+      { text: 'N1 – Experte', collapsed: true, items: [{ text: 'Kanji', items: [p.kanjiN1] }, { text: 'Übungen', items: [kanjiQuiz('n1')] }] },
+      { text: 'Werkzeuge', collapsed: true, items: [p.grammatikIndex, p.druckvorlagen] }
     ],
 
     search: {

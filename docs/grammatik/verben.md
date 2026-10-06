@@ -8,7 +8,7 @@ description: Die drei Verbgruppen, ます-Form, て-Form, ない-Form und Vergan
 Japanische Verben haben **keine Personalendungen** und nur zwei Zeitstufen (Vergangenheit und Nicht-Vergangenheit).
 Dafür ändern sie ihre Form je nach **Höflichkeit** und Funktion. Das Gute: Es gibt nur **zwei** unregelmäßige Verben.
 
-## Die drei Verbgruppen
+## Die drei Verbgruppen {#gruppen}
 
 Jedes Verb endet in der Wörterbuchform auf einen **u-Laut** (<span lang="ja">う く ぐ す つ ぬ ぶ む る</span>).
 Zu welcher Gruppe es gehört, bestimmt, wie es konjugiert wird.
@@ -38,7 +38,7 @@ Nicht jedes Verb auf *-iru/-eru* gehört zu Gruppe 2! Wichtige Ausnahmen (Gruppe
 Endet ein Verb **nicht** auf *-iru/-eru*, ist es **immer** Gruppe 1 (außer <span lang="ja">する／来る</span>).
 :::
 
-## Die ます-Form (höflich)
+## Die ます-Form (höflich) {#masu}
 
 Die ます-Form ist die **Standardform** für höfliches Sprechen – und die erste, die du lernen solltest.
 
@@ -104,7 +104,7 @@ Sprich die Regel als Rhythmus laut vor dich hin, bis sie sitzt – viele Lernend
 
 <span lang="ja">〜ている</span> kann noch mehr als „gerade dabei“ – alle drei Bedeutungen unter [Zeitformen & Aspekt](./zeitformen#te-iru). Erlaubnis, Verbot und Pflicht stehen unter [Dürfen, müssen, nicht dürfen](./erlaubnis).
 
-## Die Wörterbuch- und ない-Form (neutral)
+## Die Wörterbuch- und ない-Form (neutral) {#nai-form}
 
 Unter Freunden und in Nebensätzen nutzt man die **einfache Form**. Die Verneinung bildest du so:
 
@@ -130,7 +130,7 @@ Unter Freunden und in Nebensätzen nutzt man die **einfache Form**. Die Verneinu
 
 Alle Verneinungen – auch von Adjektiven und Nomen – im Überblick: [Verneinung](./verneinung).
 
-### Die einfache Vergangenheit
+### Die einfache Vergangenheit {#ta-form}
 
 Die た-Form bildest du genau wie die て-Form – nur mit <span lang="ja">た／だ</span> statt <span lang="ja">て／で</span>:
 
@@ -141,7 +141,7 @@ Die た-Form bildest du genau wie die て-Form – nur mit <span lang="ja">た�
   <div class="info-card"><span class="info-card__big" lang="ja">行って</span><span class="info-card__text" lang="ja">→ 行った（ging）</span></div>
 </div>
 
-## Übersicht: ein Verb, alle Formen
+## Übersicht: ein Verb, alle Formen {#uebersicht}
 
 ::: details 飲む (trinken) – Gruppe 1
 | Form | Höflich | Einfach |

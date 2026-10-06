@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { Kanji, Level } from '../data/levels'
 
 export interface PickerLevel {
@@ -8,10 +8,16 @@ export interface PickerLevel {
   groups: { id: string; title: string; kanji: Kanji[] }[]
 }
 
-const props = defineProps<{ levels: PickerLevel[]; weak?: Kanji[] }>()
+const props = defineProps<{ levels: PickerLevel[]; weak?: Kanji[]; openLevel?: Level }>()
 const selected = defineModel<Set<string>>({ required: true })
 
 const openLevels = ref(new Set<Level>(['n5']))
+watch(
+  () => props.openLevel,
+  (id) => {
+    if (id) openLevels.value = new Set([id])
+  }
+)
 const levelItems = (id: Level) => props.levels.find((l) => l.id === id)?.groups.flatMap((g) => g.kanji) ?? []
 const countIn = (items: Kanji[]) => items.filter((i) => selected.value.has(i.k)).length
 

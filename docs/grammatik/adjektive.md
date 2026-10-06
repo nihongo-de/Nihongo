@@ -23,9 +23,9 @@ können sogar konjugiert werden wie Verben – sie tragen selbst Zeit und Vernei
   </div>
 </div>
 
-## Konjugation
+## Konjugation {#konjugation}
 
-### い-Adjektive
+### い-Adjektive {#i-adjektive}
 
 Das End-<span lang="ja">い</span> wird ersetzt. <span lang="ja">です</span> dient nur der Höflichkeit und bleibt unverändert.
 
@@ -49,7 +49,7 @@ Die Vergangenheit steckt im Adjektiv selbst.
 Das gilt auch für Zusammensetzungen wie <span lang="ja">かっこいい → かっこよかった</span>.
 :::
 
-### な-Adjektive
+### な-Adjektive {#na-adjektive}
 
 Sie funktionieren wie Nomen mit <span lang="ja">です</span>:
 
@@ -60,7 +60,7 @@ Sie funktionieren wie Nomen mit <span lang="ja">です</span>:
   <div class="info-card"><span class="info-card__label">Verg. verneint</span><span class="info-card__big" lang="ja">静かじゃありませんでした</span><span class="info-card__text">war nicht ruhig</span></div>
 </div>
 
-## Getarnte な-Adjektive
+## Getarnte な-Adjektive {#getarnte}
 
 Einige な-Adjektive enden zufällig auf <span lang="ja">い</span> – das ist dann aber **Teil des Wortes** und wird nicht konjugiert:
 
@@ -76,7 +76,7 @@ Bei <span lang="ja">綺麗、有名、丁寧</span> gehört das <span lang="ja">
 Einzige tückische Ausnahme: <span lang="ja">嫌い</span> sieht aus wie ein い-Adjektiv, ist aber keins. Einfach merken!
 :::
 
-## Adjektive als Adverbien
+## Adjektive als Adverbien {#adjektive-als-adverbien}
 
 <div class="compare">
   <div class="compare__col">
@@ -91,7 +91,7 @@ Einzige tückische Ausnahme: <span lang="ja">嫌い</span> sieht aus wie ein い
   </div>
 </div>
 
-## Adjektive verbinden
+## Adjektive verbinden {#verbinden}
 
 Zwei Eigenschaften verknüpfst du mit der **て-Form** – nicht mit <span lang="ja">と</span>:
 

@@ -199,9 +199,21 @@ watch(selected, (s) => {
     localStorage.setItem(SELECTION_KEY, JSON.stringify([...s]))
   } catch {}
 })
+
+// Links aus dem Lernpfad (kanji-quiz#n4) wählen die ganze Stufe vor
+const urlLevel = ref<Level>()
+function selectFromHash() {
+  const id = location.hash.slice(1).toLowerCase()
+  const level = LEVELS.value.find((l) => l.id === id)
+  if (!level) return
+  urlLevel.value = level.id
+  selected.value = new Set(levelItems(level.id).map((i) => i.k))
+  phase.value = 'setup'
+}
 onMounted(async () => {
   loadRatings()
   window.addEventListener('keydown', onKey)
+  window.addEventListener('hashchange', selectFromHash)
   const extra = await Promise.all((['n3', 'n2', 'n1'] as const).map(async (id) => toLevel(id, await loadLevel(id))))
   LEVELS.value = [...LEVELS.value, ...extra]
   try {
@@ -209,11 +221,13 @@ onMounted(async () => {
     const known = new Set(ALL_ITEMS.value.map((i) => i.k))
     if (Array.isArray(saved)) selected.value = new Set(saved.filter((k) => known.has(k)))
   } catch {}
+  selectFromHash()
 })
 onBeforeUnmount(() => {
   clearTimeout(timer)
   clearTimeout(advance)
   window.removeEventListener('keydown', onKey)
+  window.removeEventListener('hashchange', selectFromHash)
 })
 </script>
 
@@ -239,7 +253,7 @@ onBeforeUnmount(() => {
       </fieldset>
       <fieldset class="kq__group is-block">
         <legend>Kanji auswählen <span class="kq__muted">· {{ selected.size }} ausgewählt</span></legend>
-        <KanjiPicker v-model="selected" :levels="LEVELS" :weak="weak" />
+        <KanjiPicker v-model="selected" :levels="LEVELS" :weak="weak" :open-level="urlLevel" />
       </fieldset>
       <div class="kq__actions">
         <button type="button" class="kq__btn is-primary" :disabled="!selected.size" @click="start(selectedItems)">

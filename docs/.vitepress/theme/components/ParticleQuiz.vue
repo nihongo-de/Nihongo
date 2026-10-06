@@ -3,6 +3,7 @@ import { computed, reactive, watch } from 'vue'
 import { particleSets, particleSetTitles } from '../data/particles'
 import { gapSets, gapSetTitles } from '../data/gaps'
 import { recordResult } from '../utils/progress'
+import { stableShuffle } from '../utils/shuffle'
 import RubyText from './RubyText.vue'
 
 const props = withDefaults(defineProps<{ set: string; page?: 'partikel' | 'lueckentexte' }>(), { page: 'partikel' })
@@ -13,20 +14,10 @@ const sources = {
 }
 const source = computed(() => sources[props.page])
 
-// Deterministisch mischen, damit Server- und Client-Rendering übereinstimmen
-const fmix = (h: number) => {
-  h = Math.imul(h ^ (h >>> 16), 0x85ebca6b)
-  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35)
-  return (h ^ (h >>> 16)) >>> 0
-}
-const hash = (s: string) => fmix([...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7))
-const mix = (options: string[], seed: string) =>
-  [...options].sort((a, b) => hash(a + seed) - hash(b + seed))
-
 const items = computed(() =>
   (source.value.sets[props.set] ?? []).map((item) => {
     const [before, after = ''] = item.jp.split('＿')
-    return { ...item, before, after, options: mix(item.options.split(' '), item.jp), answers: item.answer.split('/') }
+    return { ...item, before, after, options: stableShuffle(item.options.split(' '), item.jp), answers: item.answer.split('/') }
   })
 )
 

@@ -28,7 +28,7 @@ Tippe auf ein Kanji, um die **Strichfolge** als Animation zu sehen und das Zeich
 </template>
 
 ::: info Weiter üben und Quellen
-Im [Kanji-Quiz](../uebungen/kanji-quiz) kannst du die N3-Kanji per Multiple Choice, Schreibübung oder Flashcards abfragen. Weiter geht es mit den [N2 Kanji](./kanji-n2).
+Im [Kanji-Quiz](../uebungen/kanji-quiz#n3) kannst du die N3-Kanji per Multiple Choice, Schreibübung oder Flashcards abfragen. Weiter geht es mit den [N2 Kanji](./kanji-n2).
 
 Stufenzuordnung nach den Listen von Jonathan Waller ([tanos.co.uk](https://www.tanos.co.uk/jlpt/), CC BY), Lesungen und Häufigkeit aus
 [KANJIDIC](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) (EDRDG, CC BY-SA 4.0). Die deutschen Bedeutungen sind knappe Übersetzungen der KANJIDIC-Einträge.

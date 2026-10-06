@@ -8,7 +8,7 @@ description: Die Sprachebenen des Japanischen – einfache Form, です/ます, 
 Im Japanischen hängt die **Form** eines Satzes davon ab, mit wem du sprichst – und über wen.
 Das ist weniger kompliziert, als es klingt: Als Lernender kommst du mit der <span lang="ja">です／ます</span>-Form sehr weit.
 
-## Die Sprachebenen
+## Die Sprachebenen {#ebenen}
 
 <div class="info-grid wide">
   <div class="info-card">
@@ -38,7 +38,7 @@ Das ist weniger kompliziert, als es klingt: Als Lernender kommst du mit der <spa
 Beide zusammen nennt man – mit der höflichen Form – *Keigo* (<span lang="ja">敬語</span>).
 :::
 
-## Die wichtigsten Keigo-Verben
+## Die wichtigsten Keigo-Verben {#keigo-verben}
 
 Einige häufige Verben haben eigene Keigo-Wörter. Diese Tabelle ist die wichtigste der ganzen Seite:
 
@@ -61,7 +61,7 @@ Einige häufige Verben haben eigene Keigo-Wörter. Diese Tabelle ist die wichtig
 - **Bescheiden:** <span lang="ja">お + ます-Stamm + する</span> → <span lang="ja">お待ちする</span> (warten, bescheiden)
 :::
 
-## Namen und Anreden
+## Namen und Anreden {#anreden}
 
 Japaner sprechen sich meist mit **Familienname + Suffix** an. Vornamen sind engen Beziehungen vorbehalten.
 
@@ -78,7 +78,7 @@ Japaner sprechen sich meist mit **Familienname + Suffix** an. Vornamen sind enge
 Suffixe wie <span lang="ja">さん</span> nutzt du **nie** für deinen eigenen Namen – und auch nicht für Mitglieder deiner eigenen Gruppe, wenn du mit Außenstehenden sprichst.
 :::
 
-## Uchi und Soto – innen und außen
+## Uchi und Soto – innen und außen {#uchi-soto}
 
 Japanische Höflichkeit unterscheidet zwischen der **eigenen Gruppe** (<span lang="ja">内</span>, *uchi*: Familie, eigene Firma) und **Außenstehenden** (<span lang="ja">外</span>, *soto*).
 Über die eigene Gruppe spricht man bescheiden, über andere respektvoll.
@@ -98,7 +98,7 @@ Japanische Höflichkeit unterscheidet zwischen der **eigenen Gruppe** (<span lan
 Spricht man die eigene Mutter direkt an, sagt man <span lang="ja">お母さん</span>. Die bescheidene Form <span lang="ja">母</span> nutzt man nur, wenn man mit Außenstehenden **über** sie spricht.
 :::
 
-## Die Höflichkeitspräfixe お und ご
+## Die Höflichkeitspräfixe お und ご {#praefixe}
 
 <span lang="ja">お</span> und <span lang="ja">ご</span> vor einem Nomen machen es höflicher – oder sind fester Teil des Wortes geworden.
 

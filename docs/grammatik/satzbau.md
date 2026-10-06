@@ -7,7 +7,7 @@ description: SOV-Satzstellung, Thema-Kommentar-Struktur, Satzschablone, Fragen u
 
 Japanische Sätze folgen wenigen, sehr verlässlichen Prinzipien. Wer sie verinnerlicht, kann schon mit kleinem Wortschatz korrekte Sätze bilden.
 
-## Prinzip 1: Das Verb steht am Ende
+## Prinzip 1: Das Verb steht am Ende {#verb-am-ende}
 
 Japanisch ist eine **SOV-Sprache**: Subjekt – Objekt – Verb.
 
@@ -19,7 +19,7 @@ Japanisch ist eine **SOV-Sprache**: Subjekt – Objekt – Verb.
 
 <Ex jp="私[わたし]{は}りんご{を}食[た]べます。" ro="watashi wa ringo o tabemasu." de="Ich esse einen Apfel." />
 
-## Prinzip 2: Partikel machen die Reihenfolge flexibel
+## Prinzip 2: Partikel machen die Reihenfolge flexibel {#reihenfolge}
 
 Weil **Partikel** die Rolle jedes Satzteils markieren, kann man die Teile vor dem Verb recht frei umstellen.
 Nur das Verb bleibt hinten.
@@ -42,14 +42,14 @@ Diese Reihenfolge ist die **natürlichste** und ein guter Ausgangspunkt:
 
 <Ex jp="私[わたし]{は}明日[あした]、図書館[としょかん]{で}友達[ともだち]{と}日本語[にほんご]{を}勉強[べんきょう]します。" ro="watashi wa ashita, toshokan de tomodachi to nihongo o benkyō shimasu." de="Ich lerne morgen mit einem Freund in der Bibliothek Japanisch." />
 
-## Prinzip 3: Thema und Kommentar
+## Prinzip 3: Thema und Kommentar {#thema}
 
 Japanische Sätze nennen oft zuerst ein **Thema** mit <span lang="ja">は</span> und sagen dann etwas darüber aus.
 Das Thema ist nicht unbedingt das grammatische Subjekt: „Was X betrifft, …“
 
 <Ex jp="象[ぞう]{は}鼻[はな]が長[なが]いです。" ro="zō wa hana ga nagai desu." de="Elefanten haben eine lange Nase. – wörtlich: Was Elefanten betrifft, die Nase ist lang." />
 
-## Prinzip 4: Was klar ist, fällt weg
+## Prinzip 4: Was klar ist, fällt weg {#weglassen}
 
 Subjekt, Objekt, sogar das Thema werden weggelassen, sobald sie aus dem Kontext hervorgehen.
 
@@ -59,7 +59,7 @@ Subjekt, Objekt, sogar das Thema werden weggelassen, sobald sie aus dem Kontext 
 Ständiges <span lang="ja">私は…</span> klingt unnatürlich und fast ein wenig egozentrisch. Lass „ich“ weg, wenn es klar ist.
 :::
 
-## Prinzip 5: Beschreibendes steht vorne
+## Prinzip 5: Beschreibendes steht vorne {#beschreibendes}
 
 Alles, was ein Nomen näher beschreibt, steht **davor** – Adjektive, Besitzangaben und sogar ganze Relativsätze.
 
@@ -67,7 +67,7 @@ Alles, was ein Nomen näher beschreibt, steht **davor** – Adjektive, Besitzang
 <Ex jp="{私[わたし]の}本[ほん]" ro="watashi no hon" de="mein Buch" />
 <Ex jp="{昨日[きのう]買[か]った}本[ほん]" ro="kinō katta hon" de="das Buch, das ich gestern gekauft habe" />
 
-## Nominalsätze mit です
+## Nominalsätze mit です {#desu}
 
 „A ist B“ bildest du mit <span lang="ja">AはBです</span>:
 
@@ -82,7 +82,7 @@ Alles, was ein Nomen näher beschreibt, steht **davor** – Adjektive, Besitzang
 <span lang="ja">じゃありません</span> ist gesprochene Sprache, <span lang="ja">ではありません</span> klingt formeller und steht eher in Texten.
 :::
 
-## Fragen
+## Fragen {#fragen}
 
 Aus jedem Aussagesatz wird eine Frage, indem du <span lang="ja">か</span> anhängst – **ohne** die Wortstellung zu ändern.
 

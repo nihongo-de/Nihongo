@@ -29,6 +29,8 @@ import DisplaySettings from './components/DisplaySettings.vue'
 import FormTrainer from './components/FormTrainer.vue'
 import SentencePuzzle from './components/SentencePuzzle.vue'
 import Flashcards from './components/Flashcards.vue'
+import ReadingText from './components/ReadingText.vue'
+import GrammarIndex from './components/GrammarIndex.vue'
 import ReloadPrompt from './components/ReloadPrompt.vue'
 
 // Zugeklappte Details-Blöcke beim Drucken aufklappen und danach wieder schließen
@@ -71,5 +73,7 @@ export default {
     app.component('FormTrainer', FormTrainer)
     app.component('SentencePuzzle', SentencePuzzle)
     app.component('Flashcards', Flashcards)
+    app.component('ReadingText', ReadingText)
+    app.component('GrammarIndex', GrammarIndex)
   }
 } satisfies Theme
