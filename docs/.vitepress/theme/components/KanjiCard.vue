@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, shallowRef } from 'vue'
 import RubyText from './RubyText.vue'
 import StrokeDialog from './StrokeDialog.vue'
 import SpeakButton from './SpeakButton.vue'
@@ -17,6 +17,28 @@ const props = defineProps<{
 }>()
 
 const open = ref(false)
+const btn = ref<HTMLButtonElement>()
+// Alle Kanji-Karten der Seite in Dokumentreihenfolge, damit der Dialog weiterblättern kann
+const cards = shallowRef<HTMLButtonElement[]>([])
+const index = ref(0)
+const current = computed(() => cards.value[index.value]?.dataset)
+
+function show() {
+  cards.value = [...document.querySelectorAll<HTMLButtonElement>('.kanji__char')]
+  index.value = Math.max(0, cards.value.indexOf(btn.value!))
+  open.value = true
+}
+
+function close() {
+  const el = cards.value[index.value]
+  open.value = false
+  if (!el || el === btn.value) return
+  nextTick(() => {
+    el.focus({ preventScroll: true })
+    el.scrollIntoView({ block: 'center' })
+  })
+}
+
 const rating = computed(() => ratings.value[props.k])
 const exPlain = computed(() => (props.ex ? parseRuby(props.ex).map((s) => s.text).join('') : ''))
 onMounted(loadRatings)
@@ -26,12 +48,15 @@ onMounted(loadRatings)
   <div class="kanji">
     <span v-if="rating" :class="`kanji__rating is-${rating}`" :title="`Selbstbewertung: ${ratingLabels[rating]}`" />
     <button
+      ref="btn"
       type="button"
       class="kanji__char"
       lang="ja"
+      :data-k="k"
+      :data-de="de"
       title="Strichfolge ansehen und schreiben üben"
       :aria-label="`${k}: Strichfolge und Schreibübung`"
-      @click="open = true"
+      @click="show"
     >
       {{ k }}
     </button>
@@ -44,7 +69,14 @@ onMounted(loadRatings)
       <span class="kanji__ex-word"><span lang="ja"><RubyText :text="ex" /></span><SpeakButton :text="exPlain" /></span>
       <small v-if="exDe">{{ exDe }}</small>
     </p>
-    <StrokeDialog v-if="open" :text="k" :label="de" @close="open = false" />
+    <StrokeDialog
+      v-if="open && current"
+      :text="current.k!"
+      :label="current.de!"
+      :nav="{ index, total: cards.length }"
+      @move="index += $event"
+      @close="close"
+    />
   </div>
 </template>
 

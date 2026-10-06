@@ -44,9 +44,12 @@ const countTitle = computed(() =>
       </span>
     </div>
 
-    <div class="wp__stage">
-      <WritingPad v-if="glyph" v-model="strokes" :glyph="glyph" :guide="guide" :revealed="revealed" :label="label" />
-      <p v-else class="wp__status">{{ glyph === undefined ? 'Lade …' : 'Für dieses Zeichen gibt es noch keine Strichdaten.' }}</p>
+    <div class="wp__row">
+      <div class="wp__stage">
+        <WritingPad v-if="glyph" v-model="strokes" :glyph="glyph" :guide="guide" :revealed="revealed" :label="label" />
+        <p v-else class="wp__status">{{ glyph === undefined ? 'Lade …' : 'Für dieses Zeichen gibt es noch keine Strichdaten.' }}</p>
+      </div>
+      <slot name="side" />
     </div>
 
     <div class="wp__bar">
@@ -123,12 +126,22 @@ const countTitle = computed(() =>
 .wp__count.is-ok { color: var(--vp-c-success-1); background: var(--vp-c-success-soft); }
 .wp__count.is-off { color: var(--vp-c-warning-1); background: var(--vp-c-warning-soft); }
 
+/* Platz für optionale Knöpfe links und rechts (Slot „side“) */
+.wp__row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
 /* Quadratische Bühne: auch zweiteilige Kana (きゃ) ändern die Höhe nicht */
 .wp__stage {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
+  min-width: 0;
   max-width: 300px;
   aspect-ratio: 1;
 }

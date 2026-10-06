@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import WritingPractice from './WritingPractice.vue'
 import { CELL, gridPaths, loadGlyph, rate, ratingLabels, ratings, type Glyph, type Rating } from '../utils/strokes'
 
-const props = defineProps<{ text: string; label: string }>()
-const emit = defineEmits<{ close: [] }>()
+// nav: Position des Zeichens in der Liste der Seite, blendet „vorheriges/nächstes“ ein
+const props = defineProps<{ text: string; label: string; nav?: { index: number; total: number } }>()
+const emit = defineEmits<{ close: []; move: [step: -1 | 1] }>()
 
 const panel = ref<HTMLElement>()
 const glyph = ref<Glyph | null>()
@@ -92,21 +93,55 @@ const lastRating = computed(() => ratings.value[props.text])
 /* Dialog */
 let returnFocus: HTMLElement | null = null
 let prevOverflow = ''
-const onKey = (e: KeyboardEvent) => e.key === 'Escape' && emit('close')
+const canMove = (step: -1 | 1) => !!props.nav && props.nav.index + step >= 0 && props.nav.index + step < props.nav.total
+const move = (step: -1 | 1) => canMove(step) && emit('move', step)
+const hasNav = computed(() => !!props.nav && props.nav.total > 1)
+// order platziert die Knöpfe links bzw. rechts neben der Fläche
+const SIDES = [
+  { step: -1, label: 'Vorheriges Zeichen', key: '←', d: 'M10 3 5 8l5 5' },
+  { step: 1, label: 'Nächstes Zeichen', key: '→', d: 'm6 3 5 5-5 5' }
+] as const
 
-onMounted(async () => {
+function onKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') emit('close')
+  else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !(e.target as HTMLElement).closest?.('input, select, textarea')) {
+    e.preventDefault()
+    move(e.key === 'ArrowLeft' ? -1 : 1)
+  }
+}
+
+async function load() {
+  const text = props.text
+  stop()
+  const g = await loadGlyph(text)
+  if (text !== props.text) return
+  pos.value = 0
+  lengths.value = []
+  glyph.value = g
+  if (!g) return
+  await nextTick()
+  lengths.value = ghostEls.slice(0, count.value).map((el) => el.getTotalLength())
+  if (tab.value === 'write' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) pos.value = count.value
+  else play()
+}
+
+watch(
+  () => props.text,
+  () => {
+    userStrokes.value = []
+    revealed.value = false
+    rated.value = null
+    load()
+  }
+)
+
+onMounted(() => {
   returnFocus = document.activeElement as HTMLElement | null
   prevOverflow = document.documentElement.style.overflow
   document.documentElement.style.overflow = 'hidden'
   window.addEventListener('keydown', onKey)
   panel.value?.focus()
-
-  glyph.value = await loadGlyph(props.text)
-  if (!glyph.value) return
-  await nextTick()
-  lengths.value = ghostEls.map((el) => el.getTotalLength())
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) pos.value = count.value
-  else play()
+  load()
 })
 
 onBeforeUnmount(() => {
@@ -128,12 +163,15 @@ onBeforeUnmount(() => {
         :aria-label="`Strichfolge von ${text}`"
         tabindex="-1"
       >
-        <header class="ks__head">
-          <span class="ks__char" lang="ja">{{ text }}</span>
-          <span class="ks__title">
-            <strong>{{ label }}</strong>
-            <small v-if="count">{{ count }} Strich{{ count === 1 ? '' : 'e' }}</small>
+        <header class="ks__head" :class="{ 'has-nav': hasNav }">
+          <span class="ks__id">
+            <span class="ks__char" lang="ja">{{ text }}</span>
+            <span class="ks__title">
+              <strong>{{ label }}</strong>
+              <small v-if="count">{{ count }} Strich{{ count === 1 ? '' : 'e' }}</small>
+            </span>
           </span>
+          <span v-if="hasNav" class="ks__pos">{{ nav!.index + 1 }} / {{ nav!.total }}</span>
           <button type="button" class="ks__close" aria-label="Schließen" @click="emit('close')">×</button>
         </header>
 
@@ -144,45 +182,60 @@ onBeforeUnmount(() => {
           </button>
         </div>
 
-        <p v-if="glyph === undefined" class="ks__status">Strichdaten werden geladen …</p>
-        <p v-else-if="glyph === null" class="ks__status">Für dieses Zeichen gibt es noch keine Strichdaten.</p>
+        <div v-if="!glyph" class="ks__stage is-status">
+          <p class="ks__status">
+            {{ glyph === undefined ? 'Strichdaten werden geladen …' : 'Für dieses Zeichen gibt es noch keine Strichdaten.' }}
+          </p>
+          <template v-if="hasNav">
+            <button v-for="b in SIDES" :key="b.step" type="button" class="ks__side" :style="{ order: b.step }" :aria-label="b.label" :title="`${b.label} (${b.key})`" :disabled="!canMove(b.step)" @click="move(b.step)">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path :d="b.d" /></svg>
+            </button>
+          </template>
+        </div>
 
         <div v-else class="ks__body">
           <!-- Ansehen -->
           <section v-show="tab === 'watch'" class="ks__section">
-            <svg
-              class="ks__board"
-              :viewBox="`0 0 ${glyph.width} ${CELL}`"
-              :style="{ aspectRatio: `${glyph.width} / ${CELL}`, maxWidth: `${(glyph.width / CELL) * (glyph.width > CELL ? 210 : 300)}px` }"
-              aria-hidden="true"
-            >
-              <path class="ks__frame" :d="grid.frame" />
-              <path class="ks__guides" :d="grid.guides" />
-              <g class="ks__ghost">
-                <path
-                  v-for="(s, i) in glyph.strokes"
-                  :key="i"
-                  :ref="(el) => (ghostEls[i] = el as SVGPathElement)"
-                  :d="s.d"
-                  :transform="shift(s.x)"
-                />
-              </g>
-              <g class="ks__ink">
-                <path
-                  v-for="(s, i) in glyph.strokes"
-                  :key="i"
-                  :d="s.d"
-                  :transform="shift(s.x)"
-                  :class="{ 'is-current': i === current }"
-                  :style="strokeStyle(i)"
-                />
-              </g>
-              <g v-if="showNumbers" class="ks__nums">
-                <template v-for="([x, y], i) in glyph.nums" :key="i">
-                  <text v-if="progress(i) > 0" :x="x" :y="y" :class="{ 'is-current': i === current }">{{ i + 1 }}</text>
-                </template>
-              </g>
-            </svg>
+            <div class="ks__stage">
+              <svg
+                class="ks__board"
+                :viewBox="`0 0 ${glyph.width} ${CELL}`"
+                :style="{ aspectRatio: `${glyph.width} / ${CELL}`, maxWidth: `${(glyph.width / CELL) * (glyph.width > CELL ? 210 : 300)}px` }"
+                aria-hidden="true"
+              >
+                <path class="ks__frame" :d="grid.frame" />
+                <path class="ks__guides" :d="grid.guides" />
+                <g class="ks__ghost">
+                  <path
+                    v-for="(s, i) in glyph.strokes"
+                    :key="i"
+                    :ref="(el) => (ghostEls[i] = el as SVGPathElement)"
+                    :d="s.d"
+                    :transform="shift(s.x)"
+                  />
+                </g>
+                <g class="ks__ink">
+                  <path
+                    v-for="(s, i) in glyph.strokes"
+                    :key="i"
+                    :d="s.d"
+                    :transform="shift(s.x)"
+                    :class="{ 'is-current': i === current }"
+                    :style="strokeStyle(i)"
+                  />
+                </g>
+                <g v-if="showNumbers" class="ks__nums">
+                  <template v-for="([x, y], i) in glyph.nums" :key="i">
+                    <text v-if="progress(i) > 0" :x="x" :y="y" :class="{ 'is-current': i === current }">{{ i + 1 }}</text>
+                  </template>
+                </g>
+              </svg>
+              <template v-if="hasNav">
+                <button v-for="b in SIDES" :key="b.step" type="button" class="ks__side" :style="{ order: b.step }" :aria-label="b.label" :title="`${b.label} (${b.key})`" :disabled="!canMove(b.step)" @click="move(b.step)">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path :d="b.d" /></svg>
+                </button>
+              </template>
+            </div>
 
             <div class="ks__controls">
               <button type="button" aria-label="Zum Anfang" title="Zum Anfang" @click="goTo(0)">
@@ -249,6 +302,11 @@ onBeforeUnmount(() => {
                 </template>
                 <template v-else>Zeichne mit Finger, Stift oder Maus.</template>
               </template>
+              <template v-if="hasNav" #side>
+                <button v-for="b in SIDES" :key="b.step" type="button" class="ks__side" :style="{ order: b.step }" :aria-label="b.label" :title="`${b.label} (${b.key})`" :disabled="!canMove(b.step)" @click="move(b.step)">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path :d="b.d" /></svg>
+                </button>
+              </template>
             </WritingPractice>
             <div class="ks__foot-row">
               <label class="ks__check" :class="{ 'is-off': revealed }">
@@ -302,9 +360,48 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid var(--vp-c-divider);
 }
 
+.ks__head.has-nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.ks__head.has-nav .ks__close { justify-self: end; }
+
+.ks__id { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
 .ks__char { font-size: 34px; line-height: 1.1; }
-.ks__title { display: flex; flex-direction: column; flex: 1; line-height: 1.3; }
+.ks__title { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.3; overflow-wrap: break-word; }
 .ks__title small { font-size: 13px; color: var(--vp-c-text-2); }
+
+.ks__pos { font-size: 13px; color: var(--vp-c-text-2); white-space: nowrap; }
+
+.ks__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.ks__stage.is-status { padding: 0 20px; }
+.ks__stage .ks__status { flex: 1; text-align: center; }
+
+.ks__side {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 80px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.ks__side:hover:not(:disabled) { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
+.ks__side:disabled { opacity: 0.35; cursor: not-allowed; }
+.ks__side svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .ks__close {
   align-self: flex-start;
@@ -349,8 +446,13 @@ onBeforeUnmount(() => {
   padding: 16px 20px;
 }
 
+@media (max-width: 480px) {
+  .ks__section { padding: 16px 10px; }
+}
+
 .ks__board {
   width: 100%;
+  min-width: 0;
   border-radius: 10px;
   background: var(--vp-c-bg-soft);
 }

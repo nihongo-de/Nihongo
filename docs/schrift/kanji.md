@@ -96,6 +96,7 @@ Sie sind keine eigene Schrift, sondern eine Lesehilfe – so wie eine Lautschrif
 ::: warning Nicht zu lange darauf verlassen
 Furigana sind eine Krücke: Das Auge springt automatisch zu den Kana und überspringt das Kanji.
 Deck sie beim Üben ab – in den [Leseübungen zu den N5-Kanji](../uebungen/kanji-n5) kannst du sie per Knopfdruck ausblenden.
+Auf allen Seiten auf einmal schaltest du sie über das Menü **<span lang="ja">あ</span>** in der Navigationsleiste ab – oben rechts, auf dem Handy ganz oben in der Mitte.
 :::
 
 ## Radikale – die Bausteine

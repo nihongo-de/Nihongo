@@ -111,7 +111,13 @@ Legende: `[ ]` offen · `[~]` teilweise vorhanden · `[x]` erledigt · `[-]` zur
 
 - [ ] N4-Vokabelliste nach Themen
 - [ ] Kanji-Komposita und Lesungsregeln (wann On, wann Kun, 熟字訓 wie 今日・大人)
-- [ ] Radikale ausführlich + Suche nach Radikal
+- [ ] **Radikale** (`schrift/radikale.md`, Ausbau von *Kanji → Radikale – die Bausteine*):
+  - Positionen mit Namen: へん (links), つくり (rechts), かんむり (oben), あし (unten), かまえ (Rahmen), たれ (oben + links), にょう (links + unten)
+  - die 30–50 häufigsten Radikale mit Bedeutung, japanischem Namen (さんずい, にんべん, くさかんむり …) und Beispiel-Kanji aus N5/N4
+  - Varianten je nach Position: 水/氵, 人/亻, 手/扌, 心/忄, 火/灬, 刀/刂
+  - Laut-Bedeutungs-Zeichen (形声文字): Lautteil als Lesungshinweis (青 → 晴・清・静・精 *sei*, 寺 → 時・持・詩 *ji/shi*)
+  - Radikale im Wörterbuch nachschlagen (Radikalindex, Strichzahl)
+- [ ] **Suche nach Radikal** in den Kanji-Übersichten: Filter „Kanji mit 氵“; prüfen, ob die KanjiVG-Daten die Bestandteile liefern (`kvg:element`/`kvg:radical`, bisher liest `scripts/kanjivg.mjs` nur die Striche)
 - [ ] Vertikal schreiben & Genkō-yōshi
 
 ### Übungen & Features
@@ -119,6 +125,7 @@ Legende: `[ ]` offen · `[~]` teilweise vorhanden · `[x]` erledigt · `[-]` zur
 - [ ] Konjugationstrainer um N4-Formen erweitern: Potential, Volitional, Passiv, Kausativ, Imperativ, Konditional
 - [ ] Lückentexte: Konditional, Konjunktionen, Geben & Nehmen, transitiv/intransitiv
 - [ ] Karteikarten: N4-Vokabeln
+- [ ] Radikal-Quiz: Radikal → Bedeutung/Name, Kanji → Radikal
 - [ ] Leseübungen N4
 
 ---

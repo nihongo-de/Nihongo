@@ -35,7 +35,7 @@ Die meisten Zeichen tippst du so, wie du sie in Rōmaji schreibst: <kbd>k</kbd><
 | kleine Kana | <kbd>x</kbd> oder <kbd>l</kbd> davor | <kbd>xya</kbd> → <span lang="ja">ゃ</span>, <kbd>la</kbd> → <span lang="ja">ぁ</span> |
 | <span lang="ja">ー</span> | Minustaste <kbd>-</kbd> | <kbd>ko-hi-</kbd> → <span lang="ja">こーひー</span> → <span lang="ja">コーヒー</span> |
 | <span lang="ja">は・を・へ</span> als Partikel | so, wie sie **geschrieben** werden | <kbd>watashiha</kbd> → <span lang="ja">わたしは</span>, <kbd>wo</kbd> → <span lang="ja">を</span> |
-| <span lang="ja">ぢ・づ</span> | <kbd>di</kbd>, <kbd>du</kbd> | <kbd>tudukeru</kbd> → <span lang="ja">つづける</span> |
+| <span lang="ja">ぢ・づ</span> | <kbd>di</kbd>, <kbd>du</kbd> (gesprochen *ji*, *zu* – aber <kbd>ji</kbd>/<kbd>zu</kbd> ergibt <span lang="ja">じ・ず</span>) | <kbd>tudukeru</kbd> → <span lang="ja">つづける</span> |
 | <span lang="ja">ティ・ディ</span> | <kbd>thi</kbd>, <kbd>dhi</kbd> | <kbd>pa-thi-</kbd> → <span lang="ja">パーティー</span> |
 | <span lang="ja">ファ・フィ・フェ・フォ</span> | <kbd>fa</kbd>, <kbd>fi</kbd>, <kbd>fe</kbd>, <kbd>fo</kbd> | <kbd>fairu</kbd> → <span lang="ja">ファイル</span> |
 | <span lang="ja">ヴ</span> | <kbd>vu</kbd> | <kbd>vaiorin</kbd> → <span lang="ja">ヴァイオリン</span> |
